@@ -1,0 +1,172 @@
+{% extends "game_base.html" %}
+
+{% block title %}Error 404{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Reset & base */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #1e1e2f;
+    color: #fff;
+    line-height: 1.6;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  /* Header */
+  header {
+    background: linear-gradient(90deg, #ff7d00, #ff3d00);
+    padding: 1rem 2rem;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+  }
+  header p {
+    font-size: 1rem;
+    color: #fff9;
+    margin-top: 0.3rem;
+  }
+
+  /* Main content */
+  main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Game cards container */
+  .games {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Game card */
+  .game-card {
+    background: #2a2a40;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(255, 125, 0, 0.4);
+  }
+  .game-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .game-card-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .game-card-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #ff7d00;
+  }
+  .game-card-content p {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+  .game-card-content a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #ff7d00;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  .game-card-content a:hover {
+    background: #ff3d00;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    background: #111127;
+    color: #888;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive */
+  @media(max-width: 600px){
+    header h1 { font-size: 2rem; }
+    .game-card img { height: 150px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Games</h1>
+  <p>Explore Ovo, Snowrider3D & Minecraft</p>
+</header>
+
+<main>
+  <div class="games">
+
+    <!-- Ovo Card -->
+    <div class="game-card">
+      <img src="ovo/uploads/2025/5/ovo-favicon.jpg" alt="Ovo Game">
+      <div class="game-card-content">
+        <h2>Ovo</h2>
+        <p>Experience fast-paced puzzles and vibrant worlds in Ovo. Solve, jump, and collect to master the levels!</p>
+        <a href="/ovo">Play Now</a>
+      </div>
+    </div>
+
+    <!-- Snowrider3D Card -->
+    <div class="game-card">
+      <img src="images/snowrider3d.jpg" alt="Snowrider3D Game">
+      <div class="game-card-content">
+        <h2>Snowrider3D</h2>
+        <p>Race down treacherous slopes in Snowrider3D. Dodge obstacles, collect coins, and aim for the high score!</p>
+        <a href="/snowrider3d">Play Now</a>
+      </div>
+    </div>
+
+    <!-- Minecraft Card -->
+    <div class="game-card">
+      <img src="images/minecraft.jpg" alt="Minecraft Game">
+      <div class="game-card-content">
+        <h2>Minecraft</h2>
+        <p>Unleash your creativity in Minecraft. Build, explore, and survive in a blocky world full of adventures.</p>
+        <a href="/minecraft">Play Now</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  &copy; 2026 Game Hub. All rights reserved.
+</footer>
+
+</body>
+</html>
+
+{% endblock %}

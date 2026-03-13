@@ -1,0 +1,44 @@
+{% extends "game_base.html" %}
+
+{% block title %}Error 404{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom</title>
+    <link rel="stylesheet" href="{{ url_for('ovo_files', name='assets/css/style.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+</head>
+<body style="margin:0;">
+
+<div class="pageOnlyIframe" data-embed="{{ url }}">
+    <div class="bg_game">
+        <div class="bg_thumb" style="background-image:url('{{ url_for('ovo_files', name='uploads/2025/5/ovo-favicon.png') }}') !important"></div>
+
+        <div class="bg_playgame">
+            <div class="left">
+                <div class="bg_title">OvO</div>
+                <p class="description">Play OvO online for free! Dash, jump, and slide through tricky levels.</p>
+                <div class="btn_playgame">
+                    <img src="https://ovo-games-online.github.io/assets/image/svg/play.svg" alt="thumb"> Play Game
+                </div>
+            </div>
+            <div class="right">
+                <div class="bg_icon">
+                    <img src="{{ url_for('ovo_files', name='uploads/2025/5/ovo-favicon.png') }}" alt="thumb">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <iframe style="width:100%; height:100vh;" src="{{ url }}" frameborder="0" scrolling="no" allowfullscreen></iframe>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{{ url_for('ovo_files', name='assets/js/game-embedded.js') }}"></script>
+</body>
+</html>
+{% endblock %}
