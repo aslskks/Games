@@ -11,36 +11,30 @@
     <title>Classroom</title>
     <link rel="stylesheet" href="{{ url_for('ovo_files', name='assets/css/style.min.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+
 </head>
 <body style="margin:0;">
 
 <div class="pageOnlyIframe" data-embed="{{ url }}">
     <div class="bg_game">
-        <div class="bg_thumb" style="background-image:url('{{ url_for('ovo_files', name='uploads/2025/5/ovo-favicon.png') }}') !important"></div>
-
-        <div class="bg_playgame">
-            <div class="left">
-                <div class="bg_title">OvO</div>
-                <p class="description">Play OvO online for free! Dash, jump, and slide through tricky levels.</p>
-                <div class="btn_playgame">
-                    <img src="https://ovo-games-online.github.io/assets/image/svg/play.svg" alt="thumb"> Play Game
-                </div>
-            </div>
-            <div class="right">
-                <div class="bg_icon">
-                    <img src="{{ url_for('ovo_files', name='uploads/2025/5/ovo-favicon.png') }}" alt="thumb">
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {% if (url == "https://www.hoodamath.com/mobile/games/ovo/game.html") %}
+        <iframe 
+    style="width:100%; height:100vh; overflow:auto;"
+    src="{{ url }}" 
+    frameborder="0"
+    scrolling="no"
+    allowfullscreen>
+</iframe>
+    
+    {% else %}
     <iframe 
     style="width:100%; height:100vh; overflow:auto;"
     src="{{ url }}" 
     frameborder="0"
     scrolling="yes"
     allowfullscreen>
-</iframe>
+    </iframe>
+    {% endif %}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

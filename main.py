@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request
 
 app = Flask(__name__, template_folder="templates")
 
@@ -17,10 +17,10 @@ def minecraft():
 @app.get("/ovo/uploads/2025/5/ovo-favicon.jpg")
 def ovo_favicon():
     return send_from_directory("templates/ovo/uploads/2025/5/", "ovo-favicon.png")
-@app.get("/search/<path:url>")
-def search(url):
-    # Embed any URL in iframe
-    return render_template("ovo/game.html", url=url)
+@app.post("/search")
+def search():
+    web = request.form.get("name")
+    return render_template("ovo/game.html", url=web)
 @app.get("/snowrider3d")
 def snow():
     return render_template("snowrider3d/snowrider3d.html")
