@@ -45,8 +45,13 @@ files = {
 }
 
 for path, url in files.items():
+    
+    if os.path.exists("snowrider3d/" + path):
+        print("Skiping: " + path)
+        continue
+    path = "snowrider3d/" + path
     print("Downloading", path)
-
+    
     r = requests.get(url, stream=True)
 
     os.makedirs(os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
