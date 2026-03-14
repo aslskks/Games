@@ -1,6 +1,6 @@
 {% extends "game_base.html" %}
 
-{% block title %}Error 404{% endblock %}
+{% block title %}Classroom{% endblock %}
 
 {% block content %}
 <!DOCTYPE html>
@@ -9,14 +9,13 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Classroom</title>
-    <meta name="description" content="Immerse yourself in Snow Rider 3D, a thrilling skiing adventure game set in breathtaking mountain landscapes. Ride your sleigh down snowy slopes, dodge obstacles, and collect gifts for an exhilarating experience.">
     <meta name="theme-color" content="#007ACC">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.jpg') }}">
     <link rel="stylesheet" href="snowrider3d/TemplateData/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Your Name">
+    <meta name="author" content="aslskks">
     <meta name="keywords" content="Snow Rider 3D, skiing game, winter sports, snowboarding, ski game, mountain landscapes, skiing adventure, snowboarding adventure, snowy mountain, sleigh ride, winter game">
     <script src="snowrider3d/TemplateData/UnityProgress.js"></script>
+    
     <script src="snowrider3d/Build/UnityLoader.js"></script>
     <script>
         var gameInstance = UnityLoader.instantiate("gameContainer", "snowrider3d/Build/SnowRider3D-gd-1.json", {onProgress: UnityProgress,Module:{onRuntimeInitialized: function() {UnityProgress(gameInstance, "complete")}}});

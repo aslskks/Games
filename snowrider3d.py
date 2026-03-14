@@ -4,9 +4,10 @@ import requests
 # folders
 build_folder = "Build"
 template_folder = "TemplateData"
-os.makedirs("snowrider3d", exist_ok=True)
-os.makedirs("snowrider3d/" +build_folder, exist_ok=True)
-os.makedirs("snowrider3d/" + template_folder, exist_ok=True)
+template = "templates/"
+os.makedirs(template + "snowrider3d", exist_ok=True)
+os.makedirs(template +"snowrider3d/" +build_folder, exist_ok=True)
+os.makedirs(template +"snowrider3d/" + template_folder, exist_ok=True)
 
 files = {
 # Build files
@@ -55,7 +56,7 @@ for path, url in files.items():
     r = requests.get(url, stream=True)
 
     os.makedirs(os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
-    path = os.path.join("snowrider3d/", path)
+    path = os.path.join(template, path)
     with open(path, "wb") as f:
         for chunk in r.iter_content(8192):
             if chunk:
