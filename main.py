@@ -12,7 +12,7 @@ import threading
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = "hola"
-EXTERNAL_FILE = "requests.json"
+EXTERNAL_FILE = "data.json"
 DB = 'database.db'
 OUTPUT_DIR = "ovo/"
 GAME_PATH = "mobile/games/ovo/"
@@ -132,7 +132,7 @@ def migrate():
                 }
 
                 # --- Write to local file safely ---
-                with open("requests.json", 'w', encoding='utf-8') as f:
+                with open(EXTERNAL_FILE, 'w', encoding='utf-8') as f:
                     json.dump(full_data, f, indent=4)
 
                 print(f"Migrated {len(requests_data)} requests and {len(ips_data)} IPs.")
