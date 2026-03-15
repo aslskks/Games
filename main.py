@@ -139,15 +139,9 @@ def migrate():
 
                 # --- Send to external endpoints ---
                 try:
-                    requests.post("https://managment-ujja.onrender.com/migrate-requests", json=requests_data)
+                    requests.post("https://managment-ujja.onrender.com/migrate-requests", json=full_data)
                 except Exception as e:
                     print("Error sending requests:", e)
-                    traceback.print_exc()
-
-                try:
-                    requests.post("https://managment-ujja.onrender.com/migrate-ip", json=ips_data)
-                except Exception as e:
-                    print("Error sending IPs:", e)
                     traceback.print_exc()
 
                 # --- Wait before next migration ---
