@@ -95,7 +95,7 @@ def recent_login(user):
 def send_forgot(user):
     body = open("templates\\htmls\\forgot_email.html").read()
     code = os.urandom(16).hex()
-    body=body.replace("{{RESET_LINK}}","https://games-8upn.onrender.com" + code)
+    body=body.replace("{{RESET_LINK}}","https://games-8upn.onrender.com/reset/" + code)
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM codes WHERE user = ? OR email = ?", (user,user))
