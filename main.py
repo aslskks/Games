@@ -203,7 +203,6 @@ def remove_request():
 try:
     t = Thread(target=migrate, daemon=True)
     t.start()
-    app.run()
 except KeyboardInterrupt:
     print("Stopping server...")
     sys.exit()
