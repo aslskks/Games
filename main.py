@@ -40,7 +40,8 @@ def post_game_request():
     message = request.form.get("message")
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO requests (name, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, datetime.now(ZoneInfo("America/Mexico_City"))))
+        created_at = datetime.now(ZoneInfo("America/Mexico_City")).isoformat()
+        cursor.execute("INSERT INTO requests (name, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, created_at))
         conn.commit()
     return redirect(url_for("index"))
 # --- Example game routes ---
@@ -208,14 +209,12 @@ def remove_request():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-if __name__ == "__main__":
-    try:
-        t = Thread(target=migrate, daemon=True)
-        t.start()
-        app.run(debug=True, host="0.0.0.0", use_reloader=False, port=10000)
-    except KeyboardInterrupt:
-        print("Stopping server...")
-        sys.exit()
-    except Exception as e:
-        print("Error:", e)
-        sys.exit()
+try:
+    t = Thread(target=migrate, daemon=True)
+    t.start()
+except KeyboardInterrupt:
+    print("Stopping server...")
+    sys.exit()
+except Exception as e:
+    print("Error:", e)
+    sys.exit()
