@@ -1,0 +1,42 @@
+{
+  "networks": [
+    "Poki",
+    "CrazyGames",
+    "GamePix",
+    "GameDistribution",
+    "GameMonetize",
+    "CoolMathGames",
+    "HoodaMath",
+    "FreezeNova",
+    "games-8upn",
+    "",
+    "127.0.0.1"
+  ],
+  "name": "HoodaMath",
+  "gameId": "1377b99c10284c229423118a941af3b1",
+  "removeSocials": true,
+  "stopAudioInBackground": false,
+  "removeMidrollRewarded": true,
+  "noReligion": false,
+  "removeServiceWorker": true,
+  "interTypes": {
+    "loader": false,
+    "mainMenuStart": true,
+    "randomskins": true,
+    "removeads": false,
+    "levelStart": true,
+    "restart": true,
+    "levelStartFromMenu": true,
+    "levelStartOnSuccess": true
+  },
+  "splashScreen": true,
+  "sitelock": true,
+  "sites": [
+    "www.hoodamath.com",
+    "hoodamath.com",
+    "games-8upn",
+    "",
+    "127.0.0.1"
+  ],
+  "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
+}

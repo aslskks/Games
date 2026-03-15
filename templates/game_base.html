@@ -43,5 +43,15 @@ document.addEventListener('keydown', function(e) {
         document.body.classList.remove('locked');
     }
 });</script>
+<script>
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key = "m" && e.shiftkey) {
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = "block";
+            overlay.body = '<iframe style="width:100%; height:100vh; overflow:auto;"src="https://classroom.google.com" frameborder="0"scrolling="yes"allowfullscreen></iframe>';
+        }
+    });
+</script>
 </body>
 </html>
