@@ -142,7 +142,7 @@ def migrate():
                     traceback.print_exc()
 
                 # --- Wait before next migration ---
-                stop_event.wait(5)
+                stop_event.wait(10)
 
             except Exception as e:
                 print("Error during migration loop:", e)
