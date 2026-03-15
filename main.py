@@ -190,7 +190,7 @@ if __name__ == "__main__":
     try:
         t = Thread(target=migrate, daemon=True)
         t.start()
-        app.run(debug=True, host="0.0.0.0", use_reloader=False)
+        app.run(debug=True, host="0.0.0.0", use_reloader=False, port=10000)
     except KeyboardInterrupt:
         print("Stopping server...")
         sys.exit()
