@@ -36,6 +36,11 @@ cursor.execute("""CReATE TABLE IF NOT EXISTS codes(
     code TEXT NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS token(
+    user TEXT NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP
+    )""")
 conn.commit()
 conn.close()
 def get_ip_location(ip_address):
@@ -116,11 +121,26 @@ def send_forgot(user):
         raise smtplib.SMTPAuthenticationError
     except Exception:
         raise Exception
+public_dom = ["login", "register", "static", "assets", "uploads", "logout", "forgot", "reset", "reset_post", "index"]
 @app.before_request
 def require_login():
-    if request.endpoint and "user" not in session and request.endpoint not in ["login", "register", "static", "assets", "uploads", "logout", "forgot", "reset", "reset_post", "index"]:
+    if request.endpoint and "user" not in session and request.endpoint not in public_dom:
         print(request.endpoint)
         return redirect(url_for("login"))
+@app.before_request
+def verify_session():
+    if request.endpoint not in public_dom:
+        token = session.get("user")
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT created_at FROM token WHERE token = ?", (token,))
+            row = cursor.fetchone()
+            if row is not None:
+                if datetime.fromisoformat(row[0]).replace(tzinfo=ZoneInfo("America/Mexico_City")) + timedelta(days=30) < datetime.now(ZoneInfo("America/Mexico_City")):
+                    cursor.execute("DELETE FROM token WHERE token = ?", (token,))
+                    session.clear()
+            else:
+                session.clear()
 @app.route("/forgot", methods=["GET", "POST"])
 def forgot():
     if request.method == "GET":
@@ -158,9 +178,9 @@ def reset_post():
         row = cursor.fetchone()
         if not row:
             return render_template("htmls/invalid.html")
+        user = row[0]
         cursor.execute("SELECT created_at FROM codes WHERE code= ?", (code,))
         row = cursor.fetchone()
-        user = row[0]
         cursor.execute("DELETE FROM codes WHERE code = ?", (code,))
         password_hash = argon2.hash(password)
         cursor.execute("UPDATE users SET password_hash = ? WHERE user = ?", (password_hash, user))
@@ -214,11 +234,20 @@ def login():
         if argon2.verify(password, result[0]):
             recent_login(emailoruser, ip)
             session.permanent = True if remember else False
-            session["user"] = emailoruser
+            cursor.execute("SELECT user FROM users WHERE email = ? OR user = ?", (emailoruser,emailoruser))
+            user = cursor.fetchone()[0]
+            token = os.urandom(64).hex()
+            cursor.execute("INSERT INTO token (user, token, created_at) VALUES (?, ?, ?)", (user, token, datetime.now(ZoneInfo("America/Mexico_City"))))
+            session["user"] = token
             return {"status": "success", "message": "Login Successfully"}, 200
         return {"status": "error", "message":"Invalid Credentials"}
 @app.get("/logout")
 def logout():
+    token = session.get("user")
+    with sqlite3.connect(DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM token WHERE token = ?", (token,))
+        conn.commit()
     session.clear()
     return redirect(url_for("index", logout=True))
 @app.get("/snowrider3d")

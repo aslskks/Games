@@ -47,7 +47,7 @@ files = {
 
 for path, url in files.items():
     
-    if os.path.exists("snowrider3d/" + path):
+    if os.path.exists(template + "snowrider3d/" + path):
         print("Skiping: " + path)
         continue
     path = "snowrider3d/" + path
@@ -55,7 +55,7 @@ for path, url in files.items():
     
     r = requests.get(url, stream=True)
 
-    os.makedirs(os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
+    os.makedirs(template + os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
     path = os.path.join(template, path)
     with open(path, "wb") as f:
         for chunk in r.iter_content(8192):
