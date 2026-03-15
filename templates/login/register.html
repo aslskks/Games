@@ -28,6 +28,7 @@
 
 <form id="registerForm" action="/register" method="POST">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<input type="hidden" name="ip" id="ip">
 <!-- NAME -->
 <div class="form-group">
 <div class="input-wrapper">
@@ -103,7 +104,7 @@
 
 <script src="{{ url_for('static', filename='form-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='register.js') }}"></script>
-
+<script src="{{url_for('static', filename='ip.js')}}"></script>
 </body>
 </html>
 {% endblock %}

@@ -38,8 +38,6 @@ cursor.execute("""CReATE TABLE IF NOT EXISTS codes(
     )""")
 conn.commit()
 conn.close()
-def get_client_ip():
-    return requests.get("https://api.ipify.org").text
 def get_ip_location(ip_address):
     # Example using ipinfo.io (free plan limited)
     response = requests.get(f"https://ipinfo.io/{ip_address}/json")
@@ -50,10 +48,8 @@ def get_ip_location(ip_address):
         country = data.get("country", "")
         return f"{city}, {region}, {country}"
     return "Unknown Location"
-def recent_login(user):
+def recent_login(user,ip):
     body = open("templates\\htmls\\recent_login.html", "r").read()
-
-    ip = get_client_ip()
     location = get_ip_location(ip)
 
     body = body.replace("{{LOGIN_TIME}}", str(datetime.now(ZoneInfo("America/Mexico_City"))))
@@ -177,6 +173,7 @@ def register():
     name = request.form.get("name")
     email = request.form.get("email")
     user = request.form.get("user")
+    ip = request.form.get('ip')
     password = request.form.get("password")
     password_hash = argon2.hash(password)
 
@@ -188,12 +185,9 @@ def register():
         cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
         if cursor.fetchone():
             return {"status": "error", "message": "Email already exists"}, 200
-        cursor.execute("SELECT 1 FROM users WHERE ip = ?", (get_client_ip(),))
-        if cursor.fetchone():
-            return {"status": "error", "message": "Only 1 account per ip"}, 200
         cursor.execute(
             "INSERT INTO users (name, user, email, password_hash, ip) VALUES (?, ?, ?, ?, ?)",
-            (name, user, email, password_hash, get_client_ip())
+            (name, user, email, password_hash, ip)
         )
         conn.commit()
 
@@ -201,10 +195,13 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login/login.html")
+        if "user" not in session:
+            return render_template("login/login.html")
+        return redirect(url_for("index"))
     emailoruser = request.form.get("email")
     password = request.form.get("password")
     remember = request.form.get("remember")
+    ip = request.form.get("ip")
     with sqlite3.connect(DB, timeout=10) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT password_hash FROM users WHERE email = ?", (emailoruser,))
@@ -215,7 +212,7 @@ def login():
             if result is None:
                 return {"status": "error", "message": "Invalid Credentials"}
         if argon2.verify(password, result[0]):
-            recent_login(user=emailoruser)
+            recent_login(emailoruser, ip)
             session.permanent = True if remember else False
             session["user"] = emailoruser
             return {"status": "success", "message": "Login Successfully"}, 200
@@ -261,6 +258,8 @@ def ovo_files(name):
     return send_from_directory("templates/ovo/", name)
 @app.get("/")
 def index():
+    if "user" not in session:
+        return render_template("login/login.html")
     return render_template("home.html")
 @app.get("/<dir>/<name>")
 def p3(dir, name):

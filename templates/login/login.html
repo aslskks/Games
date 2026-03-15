@@ -19,6 +19,7 @@
             </div>
             
             <form class="login-form" id="loginForm" novalidate>
+                <input type="hidden" name="ip" id="ip">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <div class="input-wrapper">
@@ -70,6 +71,7 @@
 
     <script src="{{  url_for('static', filename='form-utils.js')  }}"></script>
     <script src="{{url_for('static', filename='password.js')}}"></script>
+<script src="{{url_for('static', filename='ip.js')}}"></script>
 </body>
 </html>
 {% endblock %}
