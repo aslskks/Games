@@ -3,8 +3,19 @@ import os
 import requests
 from urllib.parse import urlparse
 import re
-
-HAR_FILE = "www.hoodamath.com.har"
+har_files = []
+numbers= []
+for i in range(1,51):
+    numbers.append(str(i))
+for f in os.listdir():
+    if f.endswith(".har"):
+        print(numbers[0] +". " + f)
+        numbers.remove(numbers[0])
+        har_files.append(f)
+har_file = int(input("SELECT a Har file: "))
+if har_file == 0:
+    exit()
+HAR_FILE = har_files[har_file - 1]
 OUTPUT_DIR = "ovo"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -59,13 +70,9 @@ for file in os.listdir(folder):
 game_html_path = "ovo/mobile/games/ovo/game.html"
 with open(game_html_path, "r", encoding="utf-8") as f:
     content = f.read()
-
-# Remove the script tag
 content = content.replace(
     '<script src="https://www.hoodamath.com/game-preloader-ad.js"></script>', ""
 )
-
-
 with open(game_html_path, "w", encoding="utf-8") as f:
     f.write(content)
 
@@ -73,19 +80,16 @@ print("Removed game-preloader-ad.js script from game.html")
 
 json_path = "ovo/mobile/games/ovo/sdkconfig.json"
 
-domain =  str(input("Write your domain"))
+domain =  str(input("Write your domain (necesary for adding your domain to authorized pages): "))
 
 with open(json_path, "r", encoding="utf-8") as f:
     data = json.load(f)
 
 if domain not in data.get("networks", []):
     data.setdefault("networks", []).append(domain)
-
 if domain not in data.get("sites", []):
     data.setdefault("sites", []).append(domain)
-
 with open(json_path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)
-
 print(f"Domain '{domain}' added to networks and sites in {json_path}.")
 print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")

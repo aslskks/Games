@@ -195,6 +195,7 @@
 <div class="game-card" style="border: 2px solid #ff7d00;">
   <img src="image/ovo-favicon.png" alt="Ovo Game">
   <div class="game-card-content">
+    <h2>Ovo</h2>
     <p>Experience fast-paced puzzles and vibrant worlds in Ovo. Solve, jump, and collect to master the levels!</p>
     <a href="/ovo">Play Now</a>
   </div>
@@ -221,10 +222,15 @@
     </div>
 
   </div>
-
+  <!-- Small Game Request Link -->
+<div style="text-align:center; margin-top:2rem;">
+  <a href="/request-game" style="color:#ff7d00; font-weight:bold; text-decoration:underline;">
+    Request a Game
+  </a>
+</div>
   <!-- Search Section -->
 </main>
-
+<script src="{{ url_for('static', filename='ip.js')}}"></script>
 </body>
 </html>
 {% endblock %}
