@@ -16,7 +16,7 @@ har_file = int(input("SELECT a Har file: "))
 if har_file == 0:
     exit()
 HAR_FILE = har_files[har_file - 1]
-OUTPUT_DIR = "ovo"
+OUTPUT_DIR = "site_download"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -43,7 +43,7 @@ for entry in entries:
         continue
     parts = path.lstrip("/").split("/")
     safe_parts = [sanitize_name(p) for p in parts]
-    if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games" or safe_parts[2] != "ovo":
+    if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
         continue
     file_path = os.path.join(OUTPUT_DIR, *safe_parts)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)

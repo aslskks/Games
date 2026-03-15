@@ -8,6 +8,7 @@ import json
 import time
 import sys
 import requests
+import threading
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = "hola"
@@ -101,42 +102,64 @@ def serve_file(path: str):
         return send_from_directory(directory, filename)
     return "File not found", 404
 def migrate():
+    import traceback
+    stop_event = threading.Event()
+
     try:
         while True:
-            print("migrating...")
-            with sqlite3.connect(DB) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM requests")
-                columns = [desc[0] for desc in cursor.description]
-                rows = cursor.fetchall()
-                data = [dict(zip(columns, row)) for row in rows]
-            # Send to external endpoint
-            with open("requests.json", 'w') as file:
-                json.dump(data, file, indent=4)
-            print(data)
+            print("Migrating data...", flush=True)
             try:
-                requests.post("https://managment-ujja.onrender.com/migrate-requests", json=data)
+                # --- Fetch requests from DB ---
+                with sqlite3.connect(DB) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT * FROM requests")
+                    request_rows = cursor.fetchall()
+                    request_columns = [desc[0] for desc in cursor.description]
+                    requests_data = [dict(zip(request_columns, row)) for row in request_rows]
+
+                # --- Fetch IPs from DB ---
+                with sqlite3.connect(DB) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT * FROM ips")
+                    ip_rows = cursor.fetchall()
+                    ip_columns = [desc[0] for desc in cursor.description]
+                    ips_data = [dict(zip(ip_columns, row)) for row in ip_rows]
+
+                # --- Combine into one JSON object ---
+                full_data = {
+                    "requests": requests_data,
+                    "ips": ips_data
+                }
+
+                # --- Write to local file safely ---
+                with open("requests.json", 'w', encoding='utf-8') as f:
+                    json.dump(full_data, f, indent=4)
+
+                print(f"Migrated {len(requests_data)} requests and {len(ips_data)} IPs.")
+
+                # --- Send to external endpoints ---
+                try:
+                    requests.post("https://managment-ujja.onrender.com/migrate-requests", json=requests_data)
+                except Exception as e:
+                    print("Error sending requests:", e)
+                    traceback.print_exc()
+
+                try:
+                    requests.post("https://managment-ujja.onrender.com/migrate-ip", json=ips_data)
+                except Exception as e:
+                    print("Error sending IPs:", e)
+                    traceback.print_exc()
+
+                # --- Wait before next migration ---
+                stop_event.wait(5)
+
             except Exception as e:
-                print("Error sending data:", e)
-                raise Exception
-            ### migrate ips
-            with sqlite3.connect(DB) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM ips")
-                columns = [desc[0] for desc in cursor.description]
-                rows = cursor.fetchall()
-                data = [dict(zip(columns, row)) for row in rows]
-            with open("ips.json", 'w') as file:
-                json.dump(data, file, indent=4)
-            try:
-                requests.post("https://managment-ujja.onrender.com/migrate-ip", json=data)
-            except Exception as e:
-                print("Error sending data:", e)
-                raise Exception
-            
-            time.sleep(2000)
-    except Exception as e:
-        print("Error in migrate:", e)
+                print("Error during migration loop:", e)
+                traceback.print_exc()
+                # time.sleep(10)  # wait a bit before retrying in case of DB or file error
+
+    except KeyboardInterrupt:
+        print("Migration stopped by user.")
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
