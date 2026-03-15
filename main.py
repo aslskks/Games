@@ -12,6 +12,7 @@ import threading
 app = Flask(__name__, template_folder="templates")
 app.secret_key = "hola"
 EXTERNAL_FILE = "data.json"
+JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
 OUTPUT_DIR = "ovo/"
 GAME_PATH = "mobile/games/ovo/"
@@ -26,6 +27,18 @@ with sqlite3.connect(DB) as conn:
     cursor.execute("""CREATE TABLE IF NOT EXISTS ips(
         ip TEXT NOT NULL UNIQUE
         )""")
+# Load JSON safely
+def load_json():
+    if not os.path.exists(JSON_FILE):
+        return {"requests": [], "ips": []}
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+            if not isinstance(data, dict):
+                data = {"requests": [], "ips": []}
+        except json.JSONDecodeError:
+            data = {"requests": [], "ips": []}
+    return data
 # --- Home route ---
 @app.get('/')
 def index():
@@ -61,7 +74,13 @@ def ovo_favicon():
     return send_from_directory("templates/ovo/uploads/2025/5/", "ovo-favicon.jpg")
 
 # --- Search ---
-
+@app.get("/see")
+def see():
+    all_data = load_json()
+    requests_data = all_data.get("requests", [])
+    ips_data = all_data.get("ips", [])
+    user_count = len(ips_data)
+    return render_template('requests.html', data=requests_data, user_count=user_count)
 # --- Snowrider images ---
 @app.get("/images_snow/<name>")
 def images(name):
@@ -101,56 +120,6 @@ def serve_file(path: str):
         filename = os.path.basename(full_path)
         return send_from_directory(directory, filename)
     return "File not found", 404
-def migrate():
-    import traceback
-    stop_event = threading.Event()
-
-    try:
-        while True:
-            try:
-                # --- Fetch requests from DB ---
-                with sqlite3.connect(DB) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT * FROM requests")
-                    request_rows = cursor.fetchall()
-                    request_columns = [desc[0] for desc in cursor.description]
-                    requests_data = [dict(zip(request_columns, row)) for row in request_rows]
-
-                # --- Fetch IPs from DB ---
-                with sqlite3.connect(DB) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT * FROM ips")
-                    ip_rows = cursor.fetchall()
-                    ip_columns = [desc[0] for desc in cursor.description]
-                    ips_data = [dict(zip(ip_columns, row)) for row in ip_rows]
-
-                # --- Combine into one JSON object ---
-                full_data = {
-                    "requests": requests_data,
-                    "ips": ips_data
-                }
-
-                # --- Write to local file safely ---
-                with open(EXTERNAL_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(full_data, f, indent=4)
-
-                # --- Send to external endpoints ---
-                try:
-                    requests.post("https://managment-ujja.onrender.com/migrate-requests", json=full_data)
-                except Exception as e:
-                    print("Error sending requests:", e)
-                    traceback.print_exc()
-
-                # --- Wait before next migration ---
-                stop_event.wait(10)
-
-            except Exception as e:
-                print("Error during migration loop:", e)
-                traceback.print_exc()
-                # time.sleep(10)  # wait a bit before retrying in case of DB or file error
-
-    except KeyboardInterrupt:
-        print("Migration stopped by user.")
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
@@ -163,8 +132,35 @@ def log_ip():
             cursor.execute("INSERT INTO ips (ip) VALUES (?)", (ip,))
             conn.commit()
     return jsonify({"success": True})
+@app.post("/remove-request/<int:index>", methods=["POST"])
+def remove_request(index):
+    all_data = load_json()
+    requests_list = all_data.get("requests", [])
+
+    if index < 0 or index >= len(requests_list):
+        return jsonify({"success": False, "error": "Invalid index"})
+
+    row = requests_list[index]
+
+    # Send to external server
+    try:
+        response = requests.post(url_for("removerequest"), json=row)
+        if response.status_code != 200:
+            return jsonify({"success": False, "error": f"External server returned {response.status_code}"})
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Failed to contact external server: {str(e)}"})
+
+    # Remove row locally
+    requests_list.pop(index)
+    all_data['requests'] = requests_list
+    with open(JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(all_data, f, indent=4)
+
+    # Redirect back to main page instead of returning JSON
+    return redirect(url_for('index'))
+
 @app.route("/remove-request", methods=["POST"])
-def remove_request():
+def removerequest():
     try:
         row_to_remove = request.get_json()
         if not row_to_remove:
@@ -200,12 +196,3 @@ def remove_request():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-try:
-    t = Thread(target=migrate, daemon=True)
-    t.start()
-except KeyboardInterrupt:
-    print("Stopping server...")
-    sys.exit()
-except Exception as e:
-    print("Error:", e)
-    sys.exit()
