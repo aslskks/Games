@@ -16,7 +16,7 @@ har_file = int(input("SELECT a Har file: "))
 if har_file == 0:
     exit()
 HAR_FILE = har_files[har_file - 1]
-OUTPUT_DIR = "site_download"
+OUTPUT_DIR = "ovo"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

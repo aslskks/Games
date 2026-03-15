@@ -107,7 +107,6 @@ def migrate():
 
     try:
         while True:
-            print("Migrating data...", flush=True)
             try:
                 # --- Fetch requests from DB ---
                 with sqlite3.connect(DB) as conn:
@@ -134,8 +133,6 @@ def migrate():
                 # --- Write to local file safely ---
                 with open(EXTERNAL_FILE, 'w', encoding='utf-8') as f:
                     json.dump(full_data, f, indent=4)
-
-                print(f"Migrated {len(requests_data)} requests and {len(ips_data)} IPs.")
 
                 # --- Send to external endpoints ---
                 try:
@@ -206,6 +203,7 @@ def remove_request():
 try:
     t = Thread(target=migrate, daemon=True)
     t.start()
+    app.run()
 except KeyboardInterrupt:
     print("Stopping server...")
     sys.exit()

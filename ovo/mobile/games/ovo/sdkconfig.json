@@ -8,10 +8,8 @@
     "CoolMathGames",
     "HoodaMath",
     "FreezeNova",
-    "games-8upn",
-    "127.0.0.1",
-    "games-8upn.onrender.com",
-    ""
+    "",
+    "https://example-45gu.onrender.com"
   ],
   "name": "HoodaMath",
   "gameId": "1377b99c10284c229423118a941af3b1",
@@ -35,10 +33,8 @@
   "sites": [
     "www.hoodamath.com",
     "hoodamath.com",
-    "games-8upn",
-    "games-8upn.onrender.com",
-    "127.0.0.1",
-    ""
+    "",
+    "https://example-45gu.onrender.com"
   ],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
 }
