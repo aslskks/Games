@@ -12,6 +12,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
+  /* THEMES */
+body.dark {
+  background: #1e1e2f;
+  color: white;
+}
+
+body.light {
+  background: #f5f5f5;
+  color: #111;
+}
+
+body.purple {
+  background: #2e1065;
+  color: white;
+}
   /* Reset & base */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -67,11 +82,11 @@
   }
 
   /* Game cards container */
-  .games {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
+.games {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
 
   /* Game card */
   .game-card {
@@ -83,6 +98,9 @@
     display: flex;
     flex-direction: column;
   }
+  .game-card {
+  width: 100%;
+}
   .game-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 25px rgba(255, 125, 0, 0.4);
@@ -177,22 +195,119 @@
     header h1 { font-size: 2rem; }
     .game-card img { height: 150px; }
   }
+  .game-card {
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.game-card.hidden {
+  display: none;
+}
+.game-card {
+  background: #2a2a40;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.game-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 25px rgba(255,125,0,0.5);
+}
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #1e1e2f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  z-index: 9999;
+}
+.theme-selector{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.theme-btn{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+
+.theme-btn:hover{
+  transform:scale(1.2);
+}
+
+/* theme colors */
+.theme-btn.dark{
+  background:#1e1e2f;
+}
+
+.theme-btn.light{
+  background:#f5f5f5;
+  border:1px solid #ccc;
+}
+
+.theme-btn.purple{
+  background:#7c3aed;
+}
+body.dark{
+  background:#1e1e2f;
+  color:white;
+}
+
+body.light{
+  background:#f5f5f5;
+  color:#111;
+}
+
+body.purple{
+  background:#2e1065;
+  color:white;
+}
+.game-card a:hover{
+  box-shadow:0 0 10px #ff7d00;
+}
 </style>
 </head>
 <body>
+
 
 <header>
   <div class="header-left">
     <h1>Games</h1>
     <p>Explore Ovo, Snowrider3D & Minecraft</p>
   </div>
+  <div>
+<div class="theme-selector">
+  <span>🎨 Theme</span>
+
+  <button class="theme-btn dark" onclick="setTheme('dark')"></button>
+  <button class="theme-btn light" onclick="setTheme('light')"></button>
+  <button class="theme-btn purple" onclick="setTheme('purple')"></button>
+</div>
+</div>
 </header>
 
 <main>
+<div class="search-box">
+  <h2>Search Games</h2>
+  <input type="text" id="gameSearch" placeholder="Search for a game...">
+  <button onclick="clearSearch()">❌ Clear</button>
+</div>
+</div>
+<p id="noResults" style="display:none; text-align:center; margin-top:20px; color:#ff7d00;">
+  No games found
+</p>
   <div class="games">
 
     <!-- Ovo Card -->
-<div class="game-card" style="border: 2px solid #ff7d00;">
+<div class="game-card">
   <img src="image/ovo-favicon.png" alt="Ovo Game">
   <div class="game-card-content">
     <h2>Ovo</h2>
@@ -228,8 +343,83 @@
     Request a Game
   </a>
 </div>
-  <!-- Search Section -->
+<footer>
+  Game Hub v1.0
+</footer>
 </main>
+<script>
+function setTheme(theme){
+  document.body.className = theme;
+  localStorage.setItem("theme", theme);
+}
+
+function loadTheme(){
+  const saved = localStorage.getItem("theme") || "dark";
+  document.body.className = saved;
+}
+
+loadTheme();
+</script>
+<script>
+  function setTheme(theme){
+  document.body.className = theme;
+  localStorage.setItem("theme", theme);
+}
+
+function loadTheme(){
+  const theme = localStorage.getItem("theme") || "dark";
+  document.body.className = theme;
+  document.getElementById("themeSelector").value = theme;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
+
+  document.getElementById("themeSelector").addEventListener("change", function(){
+    setTheme(this.value);
+  });
+});
+
+</script>
+<script>const search = document.getElementById("gameSearch");
+const games = document.querySelectorAll(".game-card");
+const noResults = document.getElementById("noResults");
+
+search.addEventListener("input", function() {
+
+  const value = this.value.toLowerCase();
+  let visible = 0;
+
+  games.forEach(game => {
+
+    const text = game.textContent.toLowerCase();
+
+    if(text.includes(value)){
+      game.classList.remove("hidden");
+      visible++;
+    } else {
+      game.classList.add("hidden");
+    }
+
+  });
+
+  if(visible === 0){
+    noResults.style.display = "block";
+  } else {
+    noResults.style.display = "none";
+  }
+
+});
+function clearSearch() {
+  const search = document.getElementById("gameSearch");
+  const games = document.querySelectorAll(".game-card");
+
+  search.value = "";
+
+  games.forEach(game => {
+    game.style.display = "";
+  });
+}</script>
 <script src="{{ url_for('static', filename='ip.js')}}"></script>
 </body>
 </html>

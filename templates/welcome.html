@@ -1,99 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Welcome - Game Hub</title>
-    <style>
-        body{
-            margin:0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg,#4f46e5,#9333ea);
-            color:white;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            text-align:center;
-        }
+<meta charset="UTF-8">
+<link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="msapplication-square32x32logo" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="msapplication-square48x48logo" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="msapplication-square96x96logo" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144"><link rel="msapplication-square144x144logo" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144">
 
-        .container{
-            background: rgba(0,0,0,0.35);
-            padding:40px 50px;
-            border-radius:12px;
-            max-width:700px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.4);
-        }
+<title>Classroom</title>
 
-        h1{
-            margin-top:0;
-            font-size:40px;
-        }
+<style>
 
-        p{
-            font-size:18px;
-            line-height:1.6;
-        }
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#6366f1,#9333ea);
+    color:white;
+}
 
-        .key{
-            background:#111;
-            padding:6px 10px;
-            border-radius:6px;
-            font-weight:bold;
-            margin:0 4px;
-            display:inline-block;
-        }
+.container{
+    text-align:center;
+}
 
-        button{
-            margin-top:25px;
-            padding:12px 22px;
-            font-size:16px;
-            border:none;
-            border-radius:8px;
-            background:#22c55e;
-            color:white;
-            cursor:pointer;
-        }
+h1{
+    font-size:48px;
+    margin-bottom:10px;
+}
 
-        button:hover{
-            background:#16a34a;
-        }
-    </style>
+.subtitle{
+    opacity:.9;
+    margin-bottom:35px;
+}
+
+button{
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    background:#16a34a;
+}
+
+.panic{
+    margin-top:25px;
+    font-size:14px;
+    opacity:.8;
+}
+
+.key{
+    background:#111;
+    padding:4px 8px;
+    border-radius:5px;
+    font-weight:bold;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <h1>Welcome to the Game Hub 🎮</h1>
 
-    <p>
-        This is your place to access all available games quickly and easily.
-        Choose any game and start playing.
-    </p>
+<h1>🎮 Game Hub</h1>
 
-    <p>
-        <strong>Panic Button:</strong><br>
-        If you need to quickly switch to the classroom view,
-        press <span class="key">Shift</span> + <span class="key">M</span>.
-        This will instantly take you to the classroom page.
-    </p>
+<button onclick="enterHub()">play</button>
 
-    <p>
-        Enjoy your time and have fun! 🚀
-    </p>
+<div class="panic">
+panic: <span class="key">Shift</span> + <span class="key">M</span>
+</div>
 
-    <button onclick="enterHub()">Enter Game Hub</button>
 </div>
 
 <script>
+
 function enterHub(){
-    window.location.href = "/first-time"; // change if your hub route is different
+    window.location.href = "/first-time";
 }
 
-// Panic button
 document.addEventListener("keydown", function(e){
     if(e.shiftKey && e.key.toLowerCase() === "m"){
-        window.location.href = "/classroom"; // change if needed
+        window.location.href = "https://classroom.google.com";
     }
 });
+
 </script>
 
 </body>

@@ -264,7 +264,9 @@ def unlock():
     return "ok"
 @app.get("/welcome")
 def welcome():
-    return render_template("welcome.html")
+    if session.get("first_time") is None:
+        return render_template("welcome.html")
+    return redirect(url_for("index"))
 @app.get("/first-time")
 def first_time():
     session.permanent = True
