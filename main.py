@@ -286,6 +286,13 @@ def serve_file(path: str):
         return send_from_directory(directory, filename)
     [print("File not found:", full_path)]
     return "File not found", 404
+@app.get("/test")
+def test():
+    if "count" not in session:
+        session["count"] = 1
+    else:
+        session["count"] += 1
+    return str(session["count"])
 @app.get("/<path>")
 def catch_all(path):
     game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
@@ -297,3 +304,4 @@ def catch_all(path):
     print("Unknown path:", game_folder)
     return "Page not found", 404
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
