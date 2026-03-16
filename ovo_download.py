@@ -3,8 +3,11 @@ import os
 import requests
 from urllib.parse import urlparse
 import re
+import time
 har_files = []
 numbers= []
+print("0. Exit")
+har_files.append("Exit")
 for i in range(1,51):
     numbers.append(str(i))
 for f in os.listdir():
@@ -12,6 +15,10 @@ for f in os.listdir():
         print(numbers[0] +". " + f)
         numbers.remove(numbers[0])
         har_files.append(f)
+if len(har_files) == 1:
+    print("Please add a Har file to the folder and try again, a har file is a file that contains all the requests made by the browser, you can get one entering the main page of the game not the iframe and in devtools you go to the network tab and then you search the download icon and you click on it and then you save the har file and put in the same folder as this script and then you run the script")
+    time.sleep(30)
+    exit()
 har_file = int(input("SELECT a Har file: "))
 if har_file == 0:
     exit()
@@ -84,5 +91,5 @@ with open(json_path, "r", encoding="utf-8") as f:
     data = json.load(f)
 
 data["sitelock"] = False
-print("Disabled sitelock in ")
+print("Disabled sitelock in configuration file")
 print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")
