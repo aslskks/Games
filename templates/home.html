@@ -298,7 +298,6 @@ body.purple{
 <div class="search-box">
   <h2>Search Games</h2>
   <input type="text" id="gameSearch" placeholder="Search for a game...">
-  <button onclick="clearSearch()">❌ Clear</button>
 </div>
 </div>
 <p id="noResults" style="display:none; text-align:center; margin-top:20px; color:#ff7d00;">
@@ -409,17 +408,7 @@ search.addEventListener("input", function() {
     noResults.style.display = "none";
   }
 
-});
-function clearSearch() {
-  const search = document.getElementById("gameSearch");
-  const games = document.querySelectorAll(".game-card");
-
-  search.value = "";
-
-  games.forEach(game => {
-    game.style.display = "";
-  });
-}</script>
+});</script>
 <script src="{{ url_for('static', filename='ip.js')}}"></script>
 </body>
 </html>
