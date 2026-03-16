@@ -80,16 +80,9 @@ print("Removed game-preloader-ad.js script from game.html")
 
 json_path = "ovo/mobile/games/ovo/sdkconfig.json"
 
-domain =  str(input("Write your domain (necesary for adding your domain to authorized pages): "))
-
 with open(json_path, "r", encoding="utf-8") as f:
     data = json.load(f)
 
-if domain not in data.get("networks", []):
-    data.setdefault("networks", []).append(domain)
-if domain not in data.get("sites", []):
-    data.setdefault("sites", []).append(domain)
-with open(json_path, "w", encoding="utf-8") as f:
-    json.dump(data, f, indent=2)
-print(f"Domain '{domain}' added to networks and sites in {json_path}.")
+data["sitelock"] = False
+print("Disabled sitelock in ")
 print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")
