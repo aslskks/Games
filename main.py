@@ -256,6 +256,20 @@ def update_json():
             json.dump(full_data, file, indent=4)
         import time
         time.sleep(5)
+@app.get("/unlock")
+def unlock():
+    if session.get("first_time") is None:
+        print("First time visitor")
+        return redirect(url_for("welcome"))
+    return "ok"
+@app.get("/welcome")
+def welcome():
+    return render_template("welcome.html")
+@app.get("/first-time")
+def first_time():
+    session.permanent = True
+    session["first_time"] = True
+    return redirect(url_for("index"))
 @app.route("/<path:path>")
 def serve_file(path: str):
     # Full folder path
@@ -279,3 +293,4 @@ def catch_all(path):
     print("Unknown path:", game_folder)
     return "Page not found", 404
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)

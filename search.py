@@ -6,8 +6,8 @@ for f in os.listdir(path):
         with open(os.path.join(path, f), "r", encoding="utf-8", errors="ignore") as file:
             for line in file:
                 if "hoodamath" in line:
-                    files.append(f)
-                    break
+                    if f not in files:
+                        files.append(f)
     except:
         continue
 with open("data.log", "a+") as f:

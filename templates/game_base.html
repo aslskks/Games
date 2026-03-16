@@ -34,10 +34,15 @@
 
     <script>const combination = {ctrl: true, alt: true, key: 's'};
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', async function(e) {
     if (e.ctrlKey === combination.ctrl &&
         e.altKey === combination.alt &&
         e.key.toLowerCase() === combination.key) {
+        const response = await fetch('/unlock', {method: 'GET'});
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
         const overlay = document.getElementById('overlay');
         if (overlay) overlay.style.display = 'none';
         document.body.classList.remove('locked');

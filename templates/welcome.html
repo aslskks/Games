@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome - Game Hub</title>
+    <style>
+        body{
+            margin:0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg,#4f46e5,#9333ea);
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            text-align:center;
+        }
+
+        .container{
+            background: rgba(0,0,0,0.35);
+            padding:40px 50px;
+            border-radius:12px;
+            max-width:700px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        h1{
+            margin-top:0;
+            font-size:40px;
+        }
+
+        p{
+            font-size:18px;
+            line-height:1.6;
+        }
+
+        .key{
+            background:#111;
+            padding:6px 10px;
+            border-radius:6px;
+            font-weight:bold;
+            margin:0 4px;
+            display:inline-block;
+        }
+
+        button{
+            margin-top:25px;
+            padding:12px 22px;
+            font-size:16px;
+            border:none;
+            border-radius:8px;
+            background:#22c55e;
+            color:white;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#16a34a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome to the Game Hub 🎮</h1>
+
+    <p>
+        This is your place to access all available games quickly and easily.
+        Choose any game and start playing.
+    </p>
+
+    <p>
+        <strong>Panic Button:</strong><br>
+        If you need to quickly switch to the classroom view,
+        press <span class="key">Shift</span> + <span class="key">M</span>.
+        This will instantly take you to the classroom page.
+    </p>
+
+    <p>
+        Enjoy your time and have fun! 🚀
+    </p>
+
+    <button onclick="enterHub()">Enter Game Hub</button>
+</div>
+
+<script>
+function enterHub(){
+    window.location.href = "/first-time"; // change if your hub route is different
+}
+
+// Panic button
+document.addEventListener("keydown", function(e){
+    if(e.shiftKey && e.key.toLowerCase() === "m"){
+        window.location.href = "/classroom"; // change if needed
+    }
+});
+</script>
+
+</body>
+</html>
