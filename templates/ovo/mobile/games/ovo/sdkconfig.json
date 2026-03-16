@@ -1,4 +1,4 @@
-{
+{% comment %} {
   "networks": [
     "Poki",
     "CrazyGames",
@@ -8,8 +8,6 @@
     "CoolMathGames",
     "HoodaMath",
     "FreezeNova",
-    "127.0.0.1",
-    "example-45gu.onrender.com"
   ],
   "name": "HoodaMath",
   "gameId": "1377b99c10284c229423118a941af3b1",
@@ -35,4 +33,4 @@
     "hoodamath.com",
   ],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
-}
+} {% endcomment %}

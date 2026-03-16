@@ -8,7 +8,7 @@ har_files = []
 numbers= []
 print("0. Exit")
 har_files.append("Exit")
-for i in range(1,51):
+for i in range(0,51):
     numbers.append(str(i))
 for f in os.listdir():
     if f.endswith(".har"):
@@ -22,7 +22,10 @@ if len(har_files) == 1:
 har_file = int(input("SELECT a Har file: "))
 if har_file == 0:
     exit()
+
 HAR_FILE = har_files[har_file - 1]
+if HAR_FILE == "Exit":
+    exit()
 OUTPUT_DIR = "ovo"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -87,9 +90,7 @@ print("Removed game-preloader-ad.js script from game.html")
 
 json_path = "ovo/mobile/games/ovo/sdkconfig.json"
 
-with open(json_path, "r", encoding="utf-8") as f:
-    data = json.load(f)
-
-data["sitelock"] = False
+with open(json_path, "w", encoding="utf-8") as f:
+    f.write(" ")
 print("Disabled sitelock in configuration file")
 print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")
