@@ -5,10 +5,12 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 from threading import Thread
 import json
+from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv("SECRET", "hola")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 EXTERNAL_FILE = "data.json"
 JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
