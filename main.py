@@ -19,7 +19,7 @@ GAME_PATH = "mobile/games/ovo/"
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE="Strict"
+    SESSION_COOKIE_SAMESITE="Lax"
 )
 def get_ip():
     return request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
