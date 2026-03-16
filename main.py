@@ -8,7 +8,7 @@ import json
 import requests
 
 app = Flask(__name__, template_folder="templates")
-app.secret_key = os.getenv("SECRET")
+app.secret_key = os.getenv("SECRET", "hola")
 EXTERNAL_FILE = "data.json"
 JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
@@ -150,12 +150,16 @@ def log_ip():
             conn.commit()
     print(session.get("logged_ip"))
     if session.get("logged_ip") is None:
-        with sqlite3.connect(DB) as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO ips (ip) VALUES (?)", (ip,))
-            conn.commit()
-        session.permanent = True
-        session["logged_ip"] = True
+        try:
+            with sqlite3.connect(DB) as conn:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO ips (ip) VALUES (?)", (ip,))
+                conn.commit()
+            session.permanent = True
+            session["logged_ip"] = True
+        except:
+            session.permanent = True
+            session["logged_ip"] = True
     return jsonify({"success": True})
 @app.post("/remove-request/<int:index>")
 def remove_request(index):
@@ -276,3 +280,4 @@ def catch_all(path):
     print("Unknown path:", game_folder)
     return "Page not found", 404
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)

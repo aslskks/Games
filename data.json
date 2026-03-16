@@ -1,0 +1,26 @@
+{
+    "requests": [],
+    "ips": [
+        {
+            "ip": "ok"
+        }
+    ],
+    "views": [
+        {
+            "ip": "ok",
+            "game": "ovo"
+        },
+        {
+            "ip": "ok",
+            "game": "ovo"
+        },
+        {
+            "ip": "ok",
+            "game": "ovo"
+        },
+        {
+            "ip": "ok",
+            "game": "ovo"
+        }
+    ]
+}
