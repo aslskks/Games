@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify, session
 import os
 import sqlite3
 from zoneinfo import ZoneInfo
@@ -8,12 +8,17 @@ import json
 import requests
 
 app = Flask(__name__, template_folder="templates")
-app.secret_key = "hola"
+app.secret_key = os.getenv("SECRET")
 EXTERNAL_FILE = "data.json"
 JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
 OUTPUT_DIR = "templates/ovo/"
 GAME_PATH = "mobile/games/ovo/"
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE="Strict"
+)
 def get_ip():
     return request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
 with sqlite3.connect(DB) as conn:
@@ -126,10 +131,8 @@ def ovo():
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
-    ip = get_ip()
-    print("ip: ", ip)
+    ip = "ok"
     endpoint = data.get("endpoint", "unknown")
-    print(f"Logging IP: {ip} for path: {endpoint}")
     if endpoint.startswith("/ovo"):
         game = "ovo"
     elif endpoint.startswith("/snowrider3d"):
@@ -145,13 +148,14 @@ def log_ip():
             cursor = conn.cursor()
             cursor.execute("INSERT INTO views (ip, game) VALUES (?, ?)", (ip, game))
             conn.commit()
-    with sqlite3.connect(DB) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM ips WHERE ip = ?", (ip,))
-        row = cursor.fetchone()
-        if not row:
+    print(session.get("logged_ip"))
+    if session.get("logged_ip") is None:
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
             cursor.execute("INSERT INTO ips (ip) VALUES (?)", (ip,))
             conn.commit()
+        session.permanent = True
+        session["logged_ip"] = True
     return jsonify({"success": True})
 @app.post("/remove-request/<int:index>")
 def remove_request(index):
@@ -272,3 +276,4 @@ def catch_all(path):
     print("Unknown path:", game_folder)
     return "Page not found", 404
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
