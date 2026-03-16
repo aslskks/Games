@@ -8,7 +8,7 @@
     "CoolMathGames",
     "HoodaMath",
     "FreezeNova",
-    "",
+    "127.0.0.1",
     "https://example-45gu.onrender.com"
   ],
   "name": "HoodaMath",
@@ -33,7 +33,7 @@
   "sites": [
     "www.hoodamath.com",
     "hoodamath.com",
-    "",
+    "127.0.0.1",
     "https://example-45gu.onrender.com"
   ],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"

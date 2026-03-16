@@ -5,16 +5,14 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 from threading import Thread
 import json
-import sys
 import requests
-import threading
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = "hola"
 EXTERNAL_FILE = "data.json"
 JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
-OUTPUT_DIR = "ovo/"
+OUTPUT_DIR = "templates/ovo/"
 GAME_PATH = "mobile/games/ovo/"
 with sqlite3.connect(DB) as conn:
     cursor = conn.cursor()
@@ -26,6 +24,10 @@ with sqlite3.connect(DB) as conn:
         )""")
     cursor.execute("""CREATE TABLE IF NOT EXISTS ips(
         ip TEXT NOT NULL UNIQUE
+        )""")
+    cursor.execute("""CREATE TABLE IF NOT EXISTS views(
+        ip TEXT NOT NULL,
+        game TEXT NOT NULL
         )""")
 # Load JSON safely
 def load_json():
@@ -66,7 +68,7 @@ def image(path):
     return send_from_directory("static", path)
 @app.get("/minecraft")
 def minecraft():
-    return send_from_directory("templates/eaglecraft", "index.html")
+    return render_template("eaglecraft/" + "index.html")
 
 # --- Ovo favicon ---
 @app.get("/ovo/uploads/2025/5/ovo-favicon.jpg")
@@ -77,10 +79,19 @@ def ovo_favicon():
 @app.get("/see")
 def see():
     all_data = load_json()
+
     requests_data = all_data.get("requests", [])
     ips_data = all_data.get("ips", [])
+    views_data = all_data.get("views", [])
+
     user_count = len(ips_data)
-    return render_template('requests.html', data=requests_data, user_count=user_count)
+
+    return render_template(
+        "requests.html",
+        data=requests_data,
+        views=views_data,
+        user_count=user_count
+    )
 # --- Snowrider images ---
 @app.get("/images_snow/<name>")
 def images(name):
@@ -101,29 +112,37 @@ def snowrider_template(name):
 # --- Main Ovo game ---
 @app.get("/ovo")
 def ovo():
-    game_folder = os.path.join(OUTPUT_DIR, "mobile", "games", "ovo")
+    game_folder = os.path.join(OUTPUT_DIR, "mobile/", "games/", "ovo/")
     filename = "game.html"
     full_path = os.path.join(game_folder, filename)
     if not os.path.exists(full_path):
         return f"File not found: {full_path}", 404
-    return send_from_directory(game_folder, filename)
+    return render_template(full_path [len("templates/"):])
 
 # --- Catch-all static files in ovo ---
-@app.route("/<path:path>")
-def serve_file(path: str):
-    # Full folder path
-    game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
-    full_path = os.path.normpath(os.path.join(game_folder, path))
-    if os.path.isfile(full_path):
-        # Split directory and filename
-        directory = os.path.dirname(full_path)
-        filename = os.path.basename(full_path)
-        return send_from_directory(directory, filename)
-    return "File not found", 404
+
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
     ip = data["ip"]
+    endpoint = data.get("endpoint", "unknown")
+    print(f"Logging IP: {ip} for path: {endpoint}")
+    if endpoint.startswith("/ovo"):
+        game = "ovo"
+    elif endpoint.startswith("/snowrider3d"):
+        game = "snowrider3d"
+    elif endpoint.startswith("/log_ip"):
+        game = "log_ip"
+    elif endpoint.startswith("/minecraft"):
+        game = "minecraft"
+    else:
+        game = "unknown"
+    if request.endpoint != "index":
+        with sqlite3.connect(DB) as conn:
+            if game != "log_ip" and game != "unknown" and endpoint != "/see":
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO views (ip, game) VALUES (?, ?)", (ip, game))
+                conn.commit()
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT 1 FROM ips WHERE ip = ?", (ip,))
@@ -132,7 +151,7 @@ def log_ip():
             cursor.execute("INSERT INTO ips (ip) VALUES (?)", (ip,))
             conn.commit()
     return jsonify({"success": True})
-@app.post("/remove-request/<int:index>", methods=["POST"])
+@app.post("/remove-request/<int:index>")
 def remove_request(index):
     all_data = load_json()
     requests_list = all_data.get("requests", [])
@@ -144,7 +163,7 @@ def remove_request(index):
 
     # Send to external server
     try:
-        response = requests.post(url_for("removerequest"), json=row)
+        response = requests.post(url_for("remove", _external=True), json=row)
         if response.status_code != 200:
             return jsonify({"success": False, "error": f"External server returned {response.status_code}"})
     except Exception as e:
@@ -157,10 +176,10 @@ def remove_request(index):
         json.dump(all_data, f, indent=4)
 
     # Redirect back to main page instead of returning JSON
-    return redirect(url_for('index'))
+    return redirect(url_for('see'))
 
-@app.route("/remove-request", methods=["POST"])
-def removerequest():
+@app.route("/removerequest", methods=["POST"])
+def remove():
     try:
         row_to_remove = request.get_json()
         if not row_to_remove:
@@ -196,3 +215,60 @@ def removerequest():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+@app.get("/views")
+def views():
+    with open(EXTERNAL_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    views_data = data.get("views", [])
+    return jsonify(views_data)
+def update_json():
+    while True:
+        print("migrating...")
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM requests")
+            columns = [desc[0] for desc in cursor.description]
+            rows = cursor.fetchall()
+            requests_data = [dict(zip(columns, row)) for row in rows]
+            cursor.execute("SELECT * FROM ips")
+            columns = [desc[0] for desc in cursor.description]
+            rows = cursor.fetchall()
+            ips_data = [dict(zip(columns, row)) for row in rows]
+            cursor.execute("SELECT * FROM views")
+            columns = [desc[0] for desc in cursor.description]
+            rows = cursor.fetchall()
+            views_data = [dict(zip(columns, row)) for row in rows]
+        full_data = {
+            "requests": requests_data,
+            "ips": ips_data,
+            "views": views_data
+        }
+
+        with open(EXTERNAL_FILE, 'w') as file:
+            json.dump(full_data, file, indent=4)
+        import time
+        time.sleep(5)
+@app.route("/<path:path>")
+def serve_file(path: str):
+    # Full folder path
+    game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
+    full_path = os.path.normpath(os.path.join(game_folder, path))
+    if os.path.isfile(full_path):
+        # Split directory and filename
+        directory = os.path.dirname(full_path)
+        filename = os.path.basename(full_path)
+        return send_from_directory(directory, filename)
+    [print("File not found:", full_path)]
+    return "File not found", 404
+@app.get("/<path>")
+def catch_all(path):
+    game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
+    full_path = os.path.normpath(os.path.join(game_folder, path))
+    if os.path.isfile(full_path):
+        directory = os.path.dirname(full_path)
+        filename = os.path.basename(full_path)
+        return send_from_directory(directory, filename)
+    print("Unknown path:", game_folder)
+    return "Page not found", 404
+Thread(target=update_json, daemon=True).start()
+app.run(host="0.0.0.0", port=5000, debug=True)
