@@ -14,6 +14,8 @@ JSON_FILE = EXTERNAL_FILE
 DB = 'database.db'
 OUTPUT_DIR = "templates/ovo/"
 GAME_PATH = "mobile/games/ovo/"
+def get_ip():
+    return request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
 with sqlite3.connect(DB) as conn:
     cursor = conn.cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS requests(
@@ -124,7 +126,8 @@ def ovo():
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
-    ip = data["ip"]
+    ip = get_ip()
+    print("ip: ", ip)
     endpoint = data.get("endpoint", "unknown")
     print(f"Logging IP: {ip} for path: {endpoint}")
     if endpoint.startswith("/ovo"):
@@ -137,12 +140,11 @@ def log_ip():
         game = "minecraft"
     else:
         game = "unknown"
-    if request.endpoint != "index":
-        with sqlite3.connect(DB) as conn:
-            if game != "log_ip" and game != "unknown" and endpoint != "/see":
-                cursor = conn.cursor()
-                cursor.execute("INSERT INTO views (ip, game) VALUES (?, ?)", (ip, game))
-                conn.commit()
+    with sqlite3.connect(DB) as conn:
+        if game != "log_ip" and game != "unknown" and endpoint != "/see":
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO views (ip, game) VALUES (?, ?)", (ip, game))
+            conn.commit()
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT 1 FROM ips WHERE ip = ?", (ip,))
@@ -223,7 +225,6 @@ def views():
     return jsonify(views_data)
 def update_json():
     while True:
-        print("migrating...")
         with sqlite3.connect(DB) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM requests")
