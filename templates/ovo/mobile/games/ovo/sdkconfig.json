@@ -9,7 +9,7 @@
     "HoodaMath",
     "FreezeNova",
     "127.0.0.1",
-    "https://example-45gu.onrender.com"
+    "example-45gu.onrender.com"
   ],
   "name": "HoodaMath",
   "gameId": "1377b99c10284c229423118a941af3b1",
@@ -29,7 +29,7 @@
     "levelStartOnSuccess": true
   },
   "splashScreen": true,
-  "sitelock": true,
+  "sitelock": false,
   "sites": [
     "www.hoodamath.com",
     "hoodamath.com",
