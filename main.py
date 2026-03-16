@@ -148,7 +148,6 @@ def log_ip():
             cursor = conn.cursor()
             cursor.execute("INSERT INTO views (ip, game) VALUES (?, ?)", (ip, game))
             conn.commit()
-    print(session.get("logged_ip"))
     if session.get("logged_ip") is None:
         try:
             with sqlite3.connect(DB) as conn:
