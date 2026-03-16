@@ -279,4 +279,3 @@ def catch_all(path):
     print("Unknown path:", game_folder)
     return "Page not found", 404
 Thread(target=update_json, daemon=True).start()
-app.run(debug=True)
