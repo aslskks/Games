@@ -5,7 +5,7 @@ for f in os.listdir(path):
     try:
         with open(os.path.join(path, f), "r", encoding="utf-8", errors="ignore") as file:
             for line in file:
-                if "unlockalllevels" in line:
+                if "offline.js" in line:
                     if f not in files:
                         files.append(f)
     except:

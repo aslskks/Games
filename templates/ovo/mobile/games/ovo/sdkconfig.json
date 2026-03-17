@@ -7,7 +7,8 @@
     "GameMonetize",
     "CoolMathGames",
     "HoodaMath",
-    "FreezeNova"
+    "FreezeNova",
+    "127.0.0.1"
   ],
   "name": "HoodaMath",
   "gameId": "1377b99c10284c229423118a941af3b1",
@@ -27,7 +28,7 @@
     "levelStartOnSuccess": true
   },
   "splashScreen": true,
-  "sitelock": false,
-  "sites": ["www.hoodamath.com", "hoodamath.com"],
+  "sitelock": true,
+  "sites": ["www.hoodamath.com", "hoodamath.com", "127.0.0.1"],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
 }
