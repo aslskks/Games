@@ -424,12 +424,6 @@ async function getTranslations() {
     for (let j = startX; j < length; j += colsPerLang) {
       json.data[array[langIdRow][j]] = json.data[array[langIdRow][j]] || {};
       if (json.data[array[langIdRow][j]][array[i][idColumn]]) {
-                if (!translations[key]) {
-          translations[key] = value;
-        }
-        else if (translations[key] !== value) {
-          console.warn(`Conflict for key ${key}: "${translations[key]}" vs "${value}"`);
-        }
       }
       json.data[array[langIdRow][j]][array[i][idColumn]] = {
         text: array[i][j],
