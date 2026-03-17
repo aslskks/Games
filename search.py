@@ -1,15 +1,17 @@
 import os
-files = []
-path = "templates/ovo/mobile/games/ovo/"
-for f in os.listdir(path):
-    try:
-        with open(os.path.join(path, f), "r", encoding="utf-8", errors="ignore") as file:
-            for line in file:
-                if "offline.js" in line:
-                    if f not in files:
-                        files.append(f)
-    except:
-        continue
-with open("data.log", "a+") as f:
-    for file in files:
-        f.write(file + "\n")
+
+path = "ovo/"
+results = []
+
+for root, _, files in os.walk(path):
+    for name in files:
+        full_path = os.path.join(root, name)
+        try:
+            with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
+                if any("adinplay" in line for line in f):
+                    results.append(full_path)
+        except:
+            pass
+
+with open("data.log", "w", encoding="utf-8") as f:
+    f.write("\n".join(results))

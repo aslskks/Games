@@ -50,14 +50,18 @@ for entry in entries:
     path = parsed.path
 
     if not path or path.endswith("/"):
-        print("Skipping directory or empty path:", url)
-        continue
+        path += "index.html"
     parts = path.lstrip("/").split("/")
     safe_parts = [sanitize_name(p) for p in parts]
-    if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
-        continue
+    # if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
+    #     continue
+    # if "ads" in safe_parts:
+    #     continue
     file_path = os.path.join(OUTPUT_DIR, *safe_parts)
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    except:
+        continue
 
     if os.path.exists(file_path.replace("%20", " ")):
         print("Already exists:", "/".join(safe_parts))
@@ -71,14 +75,14 @@ for entry in entries:
             print("Downloaded:", "/".join(safe_parts))
     except Exception as e:
         print("Error downloading:", url, e)
-folder = "ovo/mobile/games/ovo/media/"
-for file in os.listdir(folder):
-    if "%20" in file:
-        old_path = os.path.join(folder, file)
-        new_name = file.replace("%20", " ")
-        new_path = os.path.join(folder, new_name)
-        os.rename(old_path, new_path)
-        print(f"Renamed: {file} -> {new_name}")
+# folder = "ovo/mobile/games/ovo/media/"
+# for file in os.listdir(folder):
+#     if "%20" in file:
+#         old_path = os.path.join(folder, file)
+#         new_name = file.replace("%20", " ")
+#         new_path = os.path.join(folder, new_name)
+#         os.rename(old_path, new_path)
+#         print(f"Renamed: {file} -> {new_name}")
 # game_html_path = "ovo/mobile/games/ovo/game.html"
 # with open(game_html_path, "r", encoding="utf-8") as f:
 #     content = f.read()

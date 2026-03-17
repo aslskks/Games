@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify, session, abort, Response, stream_with_context
 import os
 import sqlite3
 from zoneinfo import ZoneInfo
@@ -119,7 +119,7 @@ def ovo():
     full_path = os.path.join(game_folder, filename)
     if not os.path.exists(full_path):
         return f"File not found: {full_path}", 404
-    return render_template(full_path [len("templates/"):])
+    return render_template("ovo/mobile/games/ovo/game.html")
 
 # --- Catch-all static files in ovo ---
 
@@ -267,34 +267,72 @@ def first_time():
     session.permanent = True
     session["first_time"] = True
     return redirect(url_for("index"))
+from flask import make_response
+@app.get("/s/<path:filename>")
+def serve_static(filename):
+    return send_from_directory("templates/2v2/s", filename)
+@app.get("/sw.js")
+def service_worker():
+    return send_from_directory("templates/2v2/s", "sw.js")
+BUILD_DIR = os.path.join(os.getcwd(), 'templates/2v2', 'Build')
+CDN_BASE_URL = "https://reliable-pika-0f63bb.netlify.app/Build"
+
+@app.route('/Build/<path:filename>')
+def build_files(filename):
+    """Serve /Build/* assets.
+
+    If CDN_BASE_URL is set, proxy the request through this server so the URL stays under the app's domain.
+    Otherwise, serve the local ovo/Build files.
+    """
+    if CDN_BASE_URL:
+        # Proxy from CDN so clients never leave our domain.
+        base = CDN_BASE_URL.rstrip("/")
+        url = f"{base}/{filename}"
+        resp = requests.get(url, stream=True)
+        if resp.status_code != 200:
+            return f"CDN fetch failed ({resp.status_code})", resp.status_code
+
+        headers = {}
+        for header in ("Content-Type", "Cache-Control", "Expires", "Last-Modified", "ETag"):
+            if header in resp.headers:
+                headers[header] = resp.headers[header]
+
+        return Response(
+            stream_with_context(resp.iter_content(chunk_size=8192)),
+            headers=headers,
+            status=resp.status_code,
+            content_type=resp.headers.get("Content-Type"),
+        )
+
+    file_path = os.path.join(BUILD_DIR, filename)
+    if not os.path.isfile(file_path):
+        return "File not found", 404
+    return send_from_directory(BUILD_DIR, filename)
+
+
 @app.route("/<path:path>")
 def serve_file(path: str):
-    # Full folder path
     game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
     full_path = os.path.normpath(os.path.join(game_folder, path))
+
     if os.path.isfile(full_path):
-        # Split directory and filename
-        directory = os.path.dirname(full_path)
-        filename = os.path.basename(full_path)
-        return send_from_directory(directory, filename)
-    [print("File not found:", full_path)]
+        return send_from_directory(
+            os.path.dirname(full_path),
+            os.path.basename(full_path)
+        )
+
+    # fallback opcional para /ovo/
+    full_path = os.path.normpath(os.path.join("templates/2v2", path))
+    if os.path.isfile(full_path):
+        return send_from_directory(
+            os.path.dirname(full_path),
+            os.path.basename(full_path)
+        )
+
     return "File not found", 404
-@app.get("/test")
-def test():
-    if "count" not in session:
-        session["count"] = 1
-    else:
-        session["count"] += 1
-    return str(session["count"])
-@app.get("/<path>")
-def catch_all(path):
-    game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
-    full_path = os.path.normpath(os.path.join(game_folder, path))
-    if os.path.isfile(full_path):
-        directory = os.path.dirname(full_path)
-        filename = os.path.basename(full_path)
-        return send_from_directory(directory, filename)
-    print("Unknown path:", game_folder)
-    return "Page not found", 404
+@app.get("/2v2")
+def io():
+    return send_from_directory("templates/2v2", "index.html")
+
 Thread(target=update_json, daemon=True).start()
 app.run(host="0.0.0.0", port=8080, debug=True)
