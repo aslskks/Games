@@ -305,9 +305,6 @@ def update_json():
         time.sleep(5)
 
 
-s
-
-
 @app.get("/unlock")
 def unlock():
     if session.get("first_time") is None:
