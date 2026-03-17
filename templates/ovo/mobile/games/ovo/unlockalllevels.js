@@ -424,6 +424,7 @@ async function getTranslations() {
     for (let j = startX; j < length; j += colsPerLang) {
       json.data[array[langIdRow][j]] = json.data[array[langIdRow][j]] || {};
       if (json.data[array[langIdRow][j]][array[i][idColumn]]) {
+        console.warn("key " + array[i][idColumn] + "already exists");
       }
       json.data[array[langIdRow][j]][array[i][idColumn]] = {
         text: array[i][j],

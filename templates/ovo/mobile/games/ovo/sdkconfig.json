@@ -28,9 +28,6 @@
   },
   "splashScreen": true,
   "sitelock": false,
-  "sites": [
-    "www.hoodamath.com",
-    "hoodamath.com",
-  ],
+  "sites": ["www.hoodamath.com", "hoodamath.com"],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
 }

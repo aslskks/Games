@@ -54,8 +54,8 @@ for entry in entries:
         continue
     parts = path.lstrip("/").split("/")
     safe_parts = [sanitize_name(p) for p in parts]
-    # if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
-    #     continue
+    if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
+        continue
     file_path = os.path.join(OUTPUT_DIR, *safe_parts)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
@@ -79,20 +79,20 @@ for file in os.listdir(folder):
         new_path = os.path.join(folder, new_name)
         os.rename(old_path, new_path)
         print(f"Renamed: {file} -> {new_name}")
-game_html_path = "ovo/mobile/games/ovo/game.html"
-with open(game_html_path, "r", encoding="utf-8") as f:
-    content = f.read()
-content = content.replace(
-    '<script src="https://www.hoodamath.com/game-preloader-ad.js"></script>', ""
-)
-with open(game_html_path, "w", encoding="utf-8") as f:
-    f.write(content)
+# game_html_path = "ovo/mobile/games/ovo/game.html"
+# with open(game_html_path, "r", encoding="utf-8") as f:
+#     content = f.read()
+# content = content.replace(
+#     '<script src="https://www.hoodamath.com/game-preloader-ad.js"></script>', ""
+# )
+# with open(game_html_path, "w", encoding="utf-8") as f:
+#     f.write(content)
 
-print("Removed game-preloader-ad.js script from game.html")
+# print("Removed game-preloader-ad.js script from game.html")
 
-json_path = "ovo/mobile/games/ovo/sdkconfig.json"
+# json_path = "ovo/mobile/games/ovo/sdkconfig.json"
 
-with open(json_path, "w", encoding="utf-8") as f:
-    f.write(" ")
-print("Disabled sitelock in configuration file")
-print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")
+# # with open(json_path, "w", encoding="utf-8") as f:
+# #     f.write(" ")
+# print("Disabled sitelock in configuration file")
+# print("Full ovo installation complete in ovo/mobile/games/ovo the game html is game.html")
