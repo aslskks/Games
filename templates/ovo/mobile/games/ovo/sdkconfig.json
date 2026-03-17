@@ -28,7 +28,7 @@
     "levelStartOnSuccess": true
   },
   "splashScreen": true,
-  "sitelock": true,
+  "sitelock": false,
   "sites": ["www.hoodamath.com", "hoodamath.com", "127.0.0.1"],
   "correctWebsite": "https://www.hoodamath.com/games/ovo.html"
 }
