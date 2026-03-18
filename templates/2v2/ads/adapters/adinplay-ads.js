@@ -168,11 +168,6 @@
                 // Observe for injected content
                 const observer = new MutationObserver(() => {
                     // Ad networks typically inject iframes or images
-                    const hasCreative = placeholder.querySelector('iframe, img, ins, div');
-                    if (hasCreative && placeholder.children.length > 0) {
-                        observer.disconnect();
-                        settle(true);
-                    }
                 });
                 try {
                     observer.observe(placeholder, { childList: true, subtree: true });
