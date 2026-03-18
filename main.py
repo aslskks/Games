@@ -47,12 +47,21 @@ def load_json():
         except json.JSONDecodeError:
             data = {"requests": [], "ips": []}
     return data
+@app.before_request
+def log_request_info():
+    ip = get_ip()
+    if session.get("log_in") is None:
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT OR IGNORE INTO ips (ip) VALUES (?)", (ip,))
+            conn.commit()
+        session.permanent = True
+        session["logged_ip"] = True
 @app.get('/')
 def index():
     if session.get("log_in") is None:
         return redirect(url_for("login"))
     if session.get("admin") is not None:
-        admin = True
         return render_template("home.html", admin=True)
     return render_template("home.html")
 @app.route("/login", methods=["GET", "POST"])
@@ -62,7 +71,11 @@ def login():
             return render_template("login/login.html")
         return redirect(url_for("index"))
     pin = request.get_json()["code"]
-    if pin == "2008":
+    if pin == "qwerty":
+        session.permanent = True
+        session["log_in"] = True
+        return jsonify({"message": "Succesesfull login"}), 200
+    elif pin == "0207":
         session.permanent = True
         session["log_in"] = True
         session["admin"] = True
@@ -83,9 +96,6 @@ def admin():
     return "no permission"
 @app.get("/current_code")
 def current_code():
-    """
-    Devuelve el código actual de 6 dígitos en formato JSON.
-    """
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT code FROM code LIMIT 1")
@@ -240,7 +250,7 @@ def remove_request(index):
     return redirect(url_for('see'))
 @app.get("/boxingindex")
 def boxingindex():
-    return send_from_directory("templates/boxing", "index.html")
+    return send_from_directory("basket/files/", "index.html")
 @app.get("/basket")
 def basket():
     return render_template("basket/index.html")
