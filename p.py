@@ -26,7 +26,7 @@ if har_file == 0:
 HAR_FILE = har_files[har_file - 1]
 if HAR_FILE == "Exit":
     exit()
-OUTPUT_DIR = "ovo"
+OUTPUT_DIR = "templates/2v2"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
