@@ -472,4 +472,10 @@
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('s/sw.js');
       });
-    }</script></body></html>
+    }</script><script>
+      document.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === "m" && e.shiftKey) {
+        window.location.href = "https://classroom.google.com"
+    }
+});
+    </script></body></html>
