@@ -6,6 +6,7 @@ from datetime import datetime
 from threading import Thread
 import json
 import requests
+import random
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv("SECRET", "hola")
@@ -31,6 +32,9 @@ with sqlite3.connect(DB) as conn:
         ip TEXT NOT NULL,
         game TEXT NOT NULL
         )""")
+    cursor.execute("""CREATE TABLE IF NOT EXISTS code(
+        code TEXT NOT NULL
+        )""")
 # Load JSON safely
 def load_json():
     if not os.path.exists(JSON_FILE):
@@ -43,15 +47,49 @@ def load_json():
         except json.JSONDecodeError:
             data = {"requests": [], "ips": []}
     return data
-# --- Home route ---
-# @app.get('/')
-# def index():
-#     if session.get("log_in") is None:
-#         return render_template("login/login.html")
-#     return render_template("home.html")
-@app.get("/")
+@app.get('/')
 def index():
+    if session.get("log_in") is None:
+        return redirect(url_for("login"))
     return render_template("home.html")
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method=="GET":
+        if session.get("log_in") is None:
+            return render_template("login/login.html")
+        return redirect(url_for("index"))
+    pin = request.get_json()["code"]
+    if pin == "2008":
+        session.permanent = True
+        session["log_in"] = True
+        session["admin"] = True
+        return jsonify({"message": "Succesesfull login"}), 200
+    with sqlite3.connect(DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM code WHERE code = ?", (pin,))
+        row = cursor.fetchone()
+        if row is None:
+            return jsonify({"message": "Incorrect password"}), 401
+        session.permanent = True
+        session["log_in"] = True
+    return jsonify({"message": "Succesesfull login"}), 200
+@app.get("/admin")
+def admin():
+    if session.get("admin") is not None:
+        return render_template("admin/index.html")
+    return "no permission"
+@app.get("/current_code")
+def current_code():
+    """
+    Devuelve el código actual de 6 dígitos en formato JSON.
+    """
+    with sqlite3.connect(DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT code FROM code LIMIT 1")
+        row = cursor.fetchone()
+        if row:
+            return jsonify({"code": row[0]})
+        return jsonify({"code": None})
 @app.get("/backblue.gif")
 def backblue_gif():
     return send_from_directory("templates/basket/", "backblue.gif")
@@ -372,5 +410,25 @@ def serve_file(path: str):
 def io():
     return send_from_directory("templates/2v2", "index.html")
 
+def generate_code():
+    """Genera un código aleatorio de 6 dígitos como string"""
+    return f"{random.randint(0, 999999):06d}"
+def update_code():
+    """Actualiza el código en la base de datos cada 60 segundos"""
+    while True:
+        new_code = generate_code()
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
+            # Si no hay fila, insertar; si hay, actualizar
+            cursor.execute("SELECT COUNT(*) FROM code")
+            if cursor.fetchone()[0] == 0:
+                cursor.execute("INSERT INTO code (code) VALUES (?)", (new_code,))
+            else:
+                cursor.execute("UPDATE code SET code = ? WHERE rowid = 1", (new_code,))
+            conn.commit()
+        import time
+        time.sleep(60)
+
+Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
 app.run(host="0.0.0.0", port=8080, debug=True)
