@@ -51,6 +51,9 @@ def load_json():
 def index():
     if session.get("log_in") is None:
         return redirect(url_for("login"))
+    if session.get("admin") is not None:
+        admin = True
+        return render_template("home.html", admin=True)
     return render_template("home.html")
 @app.route("/login", methods=["GET", "POST"])
 def login():
