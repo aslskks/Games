@@ -44,9 +44,20 @@ def load_json():
             data = {"requests": [], "ips": []}
     return data
 # --- Home route ---
-@app.get('/')
+# @app.get('/')
+# def index():
+#     if session.get("log_in") is None:
+#         return render_template("login/login.html")
+#     return render_template("home.html")
+@app.get("/")
 def index():
     return render_template("home.html")
+@app.get("/backblue.gif")
+def backblue_gif():
+    return send_from_directory("templates/basket/", "backblue.gif")
+@app.get("/fade.gif")
+def fade_gif():
+    return send_from_directory("templates/basket/", "fade.gif")
 @app.get("/request-game")
 def request_game():
     return render_template("game_request.html")
@@ -58,7 +69,7 @@ def post_game_request():
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         created_at = datetime.now(ZoneInfo("America/Mexico_City")).isoformat()
-        cursor.execute("INSERT INTO requests (name, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, created_at))
+        cursor.execute("INSERT INTO requests (fname, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, created_at))
         conn.commit()
     return redirect(url_for("index"))
 # --- Example game routes ---
@@ -126,7 +137,7 @@ def ovo():
 @app.post("/log_ip")
 def log_ip():
     data = request.get_json()
-    ip = "ok"
+    ip = get_ip()
     endpoint = data.get("endpoint", "unknown")
     if endpoint.startswith("/ovo"):
         game = "ovo"
@@ -155,6 +166,9 @@ def log_ip():
             session.permanent = True
             session["logged_ip"] = True
     return jsonify({"success": True})
+@app.get("/boxing")
+def boxing():
+    return render_template("boxing/frame.html")
 @app.post("/remove-request/<int:index>")
 def remove_request(index):
     all_data = load_json()
@@ -181,6 +195,24 @@ def remove_request(index):
 
     # Redirect back to main page instead of returning JSON
     return redirect(url_for('see'))
+@app.get("/boxingindex")
+def boxingindex():
+    return send_from_directory("templates/boxing", "index.html")
+@app.get("/basket")
+def basket():
+    return render_template("basket/frame.html")
+@app.get("/www.twoplayergames.org/gameframe/basket-random.html")
+def basket_rando():
+    return send_from_directory("templates/basket/www.twoplayergames.org/gameframe/", "basket-random.html")
+@app.get("/imasdk.googleapis.com/js/sdkloader/<path>")
+def basket_js(path):
+    return send_from_directory("templates/basket/imasdk.googleapis.com/js/sdkloader/", path)
+@app.get("/www.twoplayergames.org/dist/build/gameframe.b86d0fd3.js")
+def basket_gameframe():
+    return send_from_directory("templates/basket/www.twoplayergames.org/dist/build/", "gameframe.b86d0fd3.js")
+@app.get("/www.twoplayergames.org/dist/build/gameframe.c3880c83.css")
+def basket_gameframe_css():
+    return send_from_directory("templates/basket/www.twoplayergames.org/dist/build/", "gameframe.c3880c83.css")
 
 @app.route("/removerequest", methods=["POST"])
 def remove():
@@ -323,6 +355,12 @@ def serve_file(path: str):
 
     # fallback opcional para /ovo/
     full_path = os.path.normpath(os.path.join("templates/2v2", path))
+    if os.path.isfile(full_path):
+        return send_from_directory(
+            os.path.dirname(full_path),
+            os.path.basename(full_path)
+        )
+    full_path = os.path.normpath(os.path.join("templates/boxing", path))
     if os.path.isfile(full_path):
         return send_from_directory(
             os.path.dirname(full_path),

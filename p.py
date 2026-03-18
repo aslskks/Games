@@ -55,8 +55,8 @@ for entry in entries:
     safe_parts = [sanitize_name(p) for p in parts]
     # if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
     #     continue
-    # if "ads" in safe_parts:
-    #     continue
+    if "ads" in safe_parts:
+        continue
     file_path = os.path.join(OUTPUT_DIR, *safe_parts)
     try:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
