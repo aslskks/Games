@@ -1,0 +1,126 @@
+@font-face {
+  font-family: "Reckless-Book";
+  src: url("../fonts/RecklessXPD-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Travel-Sans";
+  src: url("../fonts/TravelSansVariableVF.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lardent-Pro";
+  src: url("../fonts/Lardent-Pro.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "CentraNo2";
+  src: url("../fonts/CentraNo2-Reg.woff2") format("woff2");
+  font-display: swap;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+}
+
+.banner {
+  background: #fddb32;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  cursor: pointer;
+  height: 600px;
+  left: 50%;
+  overflow: hidden;
+  position: relative;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  width: 300px;
+  /* Force a narrow width so the text breaks into lines */
+  /* 
+  .copy { 
+    font-size: 40px; 
+    font-family: sans-serif;
+    line-height: 1.2;
+  }
+  Force a narrow width so the text breaks into lines */
+  /* Ensures each line is its own 'block' for GSAP to grab */
+}
+.banner .Reckless-Book {
+  font-family: "Reckless-Book", serif;
+}
+.banner .Travel-Sans {
+  font-family: "Travel-Sans", sans-serif;
+}
+.banner .Lardent-Pro {
+  font-family: "Lardent-Pro", serif;
+}
+.banner .CentraNo2 {
+  font-family: "CentraNo2", serif;
+}
+.banner #textGrid {
+  width: 200px;
+}
+.banner .line-bg {
+  display: inline-block; /* REQUIRED */
+  width: -moz-max-content;
+  width: max-content; /* better than fit-content */
+  overflow: hidden;
+  vertical-align: top; /* removes baseline gap */
+  line-height: 0;
+}
+.banner .line {
+  background-color: #fddb32;
+  padding: 10px 16px;
+  margin-top: -1px;
+  display: inline-block;
+  width: -moz-fit-content;
+  width: fit-content;
+  line-height: 1;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.preloader {
+  background: #fddb32;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 999;
+  /*
+    .circle {
+      animation: spin 0.5s linear infinite;
+      border: $preloader-width solid #ddd;
+      border-bottom-color: #333;
+      border-radius: 50%;
+      height: $preloader-size;
+      left: 50%;
+      margin-left: calc(-1 * ($preloader-size + $preloader-width) / 2);
+      margin-top: calc(-1 * ($preloader-size + $preloader-width) / 2);
+      position: absolute;
+      top: 50%;
+      transition: all 0.7s ease-in-out;
+      width: $preloader-size;
+    }
+      */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/*# sourceMappingURL=style.css.map */

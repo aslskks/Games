@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="msapplication-square32x32logo" href="//www.gstatic.com/classroom/ic_product_classroom_32.png" sizes="32x32"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="msapplication-square48x48logo" href="//www.gstatic.com/classroom/ic_product_classroom_48.png" sizes="48x48"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="msapplication-square96x96logo" href="//www.gstatic.com/classroom/ic_product_classroom_96.png" sizes="96x96"><link rel="icon" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144"><link rel="apple-touch-icon-precomposed" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144"><link rel="msapplication-square144x144logo" href="//www.gstatic.com/classroom/ic_product_classroom_144.png" sizes="144x144">
+
+<title>Classroom</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#6366f1,#9333ea);
+    color:white;
+}
+
+.container{
+    text-align:center;
+}
+
+h1{
+    font-size:48px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    opacity:.9;
+    margin-bottom:35px;
+}
+
+button{
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    background:#16a34a;
+}
+
+.panic{
+    margin-top:25px;
+    font-size:14px;
+    opacity:.8;
+}
+
+.key{
+    background:#111;
+    padding:4px 8px;
+    border-radius:5px;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Welcome to game hub</h1>
+
+<button onclick="enterHub()">play</button>
+
+<div class="panic">
+panic: <span class="key">Shift</span> + <span class="key">M</span>
+</div>
+
+</div>
+
+<script>
+
+function enterHub(){
+    window.location.href = "/first-time";
+}
+
+document.addEventListener("keydown", function(e){
+    if(e.shiftKey && e.key.toLowerCase() === "m"){
+        window.location.href = "https://classroom.google.com";
+    }
+});
+
+</script>
+
+</body>
+</html>

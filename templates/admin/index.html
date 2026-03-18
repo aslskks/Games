@@ -1,0 +1,82 @@
+{% extends "game_base.html" %}
+
+{% block title %}Classroom{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Code Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f5f5f5;
+        }
+        .code-box {
+            background: #fff;
+            padding: 30px 50px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .code {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+        .timer {
+            font-size: 24px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="code-box">
+        <div>Current Code:</div>
+        <div class="code" id="codeDisplay">------</div>
+        <div class="timer">Next code in <span id="seconds">60</span>s</div>
+    </div>
+
+    <script>
+        let countdown = 60; // segundos
+        const secondsEl = document.getElementById('seconds');
+        const codeEl = document.getElementById('codeDisplay');
+
+        async function fetchCode() {
+            try {
+                const res = await fetch("/current_code");
+                const data = await res.json();
+                codeEl.textContent = data.code || "------";
+            } catch (err) {
+                codeEl.textContent = "Error";
+            }
+        }
+
+        // Actualiza cada segundo
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                countdown = 60; // reset
+                fetchCode();   // obtener nuevo código del servidor
+            }
+            secondsEl.textContent = countdown;
+        }, 1000);
+
+        // Obtener código inicial
+        fetchCode();
+    </script>
+    <script>document.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === "m" && e.shiftKey) {
+        window.location.href = "https://classroom.google.com"
+    }
+});</script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,442 @@
+{% extends "game_base.html" %}
+
+{% block title %}Classroom{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* THEMES */
+body.dark {
+  background: #1e1e2f;
+  color: white;
+}
+
+body.light {
+  background: #f5f5f5;
+  color: #111;
+}
+
+body.purple {
+  background: #2e1065;
+  color: white;
+}
+  /* Reset & base */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #1e1e2f;
+    color: #fff;
+    line-height: 1.6;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  /* Header */
+  header {
+    background: linear-gradient(90deg, #ff7d00, #ff3d00);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #ff3d00;
+  }
+  header h1 {
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+  }
+  header p {
+    font-size: 0.9rem;
+    color: #fff9;
+    margin-top: 0.3rem;
+  }
+  .header-left {
+    display: flex;
+    flex-direction: column;
+  }
+  .logout-btn {
+    background: #fff;
+    color: #ff3d00;
+    font-weight: bold;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  .logout-btn:hover {
+    background: #ff3d00;
+    color: #fff;
+  }
+
+  /* Main content */
+  main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Game cards container */
+.games {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+  /* Game card */
+  .game-card {
+    background: #2a2a40;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .game-card {
+  width: 100%;
+}
+  .game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(255, 125, 0, 0.4);
+  }
+  .game-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .game-card-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .game-card-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #ff7d00;
+  }
+  .game-card-content p {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+  .game-card-content a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #ff7d00;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  .game-card-content a:hover {
+    background: #ff3d00;
+  }
+
+  /* Search box */
+  .search-box{
+    margin: 2rem 0;
+    background:#2a2a40;
+    padding:1rem;
+    border-radius:10px;
+    text-align:center;
+  }
+  .search-box h2{
+    margin-bottom:0.7rem;
+    color:#ff7d00;
+  }
+  .search-box form{
+    display:flex;
+    justify-content:center;
+    gap:0.5rem;
+    flex-wrap:wrap;
+  }
+  .search-box input{
+    padding:0.5rem 0.7rem;
+    border-radius:6px;
+    border:none;
+    outline:none;
+    width:220px;
+  }
+  .search-box button{
+    padding:0.5rem 1rem;
+    border:none;
+    border-radius:6px;
+    background:#ff7d00;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+  }
+  .search-box button:hover{
+    background:#ff3d00;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    background: #111127;
+    color: #888;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive */
+  @media(max-width: 600px){
+    header { flex-direction: column; gap: 0.5rem; }
+    header h1 { font-size: 2rem; }
+    .game-card img { height: 150px; }
+  }
+  .game-card {
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.game-card.hidden {
+  display: none;
+}
+.game-card {
+  background: #2a2a40;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.game-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 25px rgba(255,125,0,0.5);
+}
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #1e1e2f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  z-index: 9999;
+}
+.theme-selector{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.theme-btn{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+
+.theme-btn:hover{
+  transform:scale(1.2);
+}
+
+/* theme colors */
+.theme-btn.dark{
+  background:#1e1e2f;
+}
+
+.theme-btn.light{
+  background:#f5f5f5;
+  border:1px solid #ccc;
+}
+
+.theme-btn.purple{
+  background:#7c3aed;
+}
+body.dark{
+  background:#1e1e2f;
+  color:white;
+}
+
+body.light{
+  background:#f5f5f5;
+  color:#111;
+}
+
+body.purple{
+  background:#2e1065;
+  color:white;
+}
+.game-card a:hover{
+  box-shadow:0 0 10px #ff7d00;
+}
+</style>
+</head>
+<body>
+
+
+<header>
+  <div class="header-left">
+    <h1>Games</h1>
+    <p>Explore Ovo, Snowrider3D & Minecraft</p>
+  </div>
+  <div>
+<div class="theme-selector">
+  <span>🎨 Theme</span>
+
+  <button class="theme-btn dark" onclick="setTheme('dark')"></button>
+  <button class="theme-btn light" onclick="setTheme('light')"></button>
+  <button class="theme-btn purple" onclick="setTheme('purple')"></button>
+</div>
+</div>
+</header>
+
+<main>
+<div class="search-box">
+  <h2>Search Games</h2>
+  <input type="text" id="gameSearch" placeholder="Search for a game...">
+</div>
+</div>
+<p id="noResults" style="display:none; text-align:center; margin-top:20px; color:#ff7d00;">
+  No games found
+</p>
+  <div class="games">
+
+    <!-- Ovo Card -->
+<div class="game-card">
+  <img src="image/ovo-favicon.png" alt="Ovo Game">
+  <div class="game-card-content">
+    <h2>Ovo</h2>
+    <p>Experience fast-paced puzzles and vibrant worlds in Ovo. Solve, jump, and collect to master the levels!</p>
+    <a href="/ovo">Play Now</a>
+  </div>
+</div>
+
+    <!-- Snowrider3D Card -->
+    <div class="game-card">
+      <img src="image/snowrider3d.png" alt="Snowrider3D Game">
+      <div class="game-card-content">
+        <h2>Snowrider3D</h2>
+        <p>Race down treacherous slopes in Snowrider3D. Dodge obstacles, collect coins, and aim for the high score!</p>
+        <a href="/snowrider3d">Play Now</a>
+      </div>
+    </div>
+
+    <!-- Minecraft Card -->
+    <div class="game-card">
+      <img src="image/logo.jpg" alt="Minecraft Game">
+      <div class="game-card-content">
+        <h2>Minecraft</h2>
+        <p>Unleash your creativity in Minecraft. Build, explore, and survive in a blocky world full of adventures.</p>
+        <a href="/minecraft">Play Now</a>
+      </div>
+    </div>
+        <div class="game-card">
+      <img src="image/2v2.jpg" alt="2v2.io Game">
+      <div class="game-card-content">
+        <h2>2v2.io</h2>
+        <p>Join the ultimate battle royale experience in 2v2.io. Test your skills against players worldwide!</p>
+        <a href="/2v2">Play Now</a>
+      </div>
+    </div>
+
+        <div class="game-card">
+      <img src="image/basket.jpg" alt="basket Game">
+      <div class="game-card-content">
+        <h2>Basket Random</h2>
+        <p>Join the ultimate basket challenge in Basket Random.</p>
+        <a href="/basket">Play Now</a>
+      </div>
+    </div>
+
+        <div class="game-card">
+      <img src="image/boxing.jpg" alt="Boxing Random Game">
+      <div class="game-card-content">
+        <h2>Boxing Random</h2>
+        <p>Step into the ring in Boxing Random!</p>
+        <a href="/boxing">Play Now</a>
+      </div>
+    </div>
+
+  </div>
+  <!-- Small Game Request Link -->
+<div style="text-align:center; margin-top:2rem;">
+  <a href="/request-game" style="color:#ff7d00; font-weight:bold; text-decoration:underline;">
+    Request a Game
+  </a>
+</div>
+
+</main>
+<footer>
+  Game Hub v1.1
+</footer>
+<script>
+function setTheme(theme){
+  document.body.className = theme;
+  localStorage.setItem("theme", theme);
+}
+
+function loadTheme(){
+  const saved = localStorage.getItem("theme") || "dark";
+  document.body.className = saved;
+}
+
+loadTheme();
+</script>
+<script>
+  function setTheme(theme){
+  document.body.className = theme;
+  localStorage.setItem("theme", theme);
+}
+
+function loadTheme(){
+  const theme = localStorage.getItem("theme") || "dark";
+  document.body.className = theme;
+  document.getElementById("themeSelector").value = theme;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
+
+  document.getElementById("themeSelector").addEventListener("change", function(){
+    setTheme(this.value);
+  });
+});
+
+</script>
+<script>const search = document.getElementById("gameSearch");
+const games = document.querySelectorAll(".game-card");
+const noResults = document.getElementById("noResults");
+
+search.addEventListener("input", function() {
+
+  const value = this.value.toLowerCase();
+  let visible = 0;
+
+  games.forEach(game => {
+
+    const text = game.textContent.toLowerCase();
+
+    if(text.includes(value)){
+      game.classList.remove("hidden");
+      visible++;
+    } else {
+      game.classList.add("hidden");
+    }
+
+  });
+
+  if(visible === 0){
+    noResults.style.display = "block";
+  } else {
+    noResults.style.display = "none";
+  }
+
+});</script>
+<script src="{{ url_for('static', filename='ip.js')}}"></script>
+</body>
+</html>
+{% endblock %}
