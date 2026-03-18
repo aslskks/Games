@@ -238,7 +238,7 @@ def boxingindex():
     return send_from_directory("templates/boxing", "index.html")
 @app.get("/basket")
 def basket():
-    return render_template("basket/frame.html")
+    return render_template("basket/index.html")
 @app.get("/www.twoplayergames.org/gameframe/basket-random.html")
 def basket_rando():
     return send_from_directory("templates/basket/www.twoplayergames.org/gameframe/", "basket-random.html")
