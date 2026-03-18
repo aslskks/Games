@@ -174,6 +174,8 @@ def ovo():
 
 @app.post("/log_ip")
 def log_ip():
+    if session.get("logged_ip") is None:
+        return redirect(url_for("login"))
     data = request.get_json()
     ip = get_ip()
     endpoint = data.get("endpoint", "unknown")
