@@ -254,7 +254,7 @@ def boxingindex():
     return send_from_directory("templates/boxing/", "index.html")
 @app.get("/basket")
 def basket():
-    return send_from_directory("basket/", "index.html")
+    return send_from_directory("basket/files/games/other/Basket_Random", "index.html")
 @app.get("/www.twoplayergames.org/gameframe/basket-random.html")
 def basket_rando():
     return send_from_directory("templates/basket/www.twoplayergames.org/gameframe/", "basket-random.html")
@@ -444,3 +444,4 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
