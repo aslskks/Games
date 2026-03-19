@@ -222,13 +222,7 @@
                 let settled = false;
                 const settle = (ok) => { if (!settled) { settled = true; resolve(ok); } };
                 
-                const observer = new MutationObserver(() => {
-                    const hasCreative = cpmstarDiv.querySelector('iframe, img, ins, div');
-                    if (hasCreative && cpmstarDiv.children.length > 0) {
-                        observer.disconnect();
-                        settle(true);
-                    }
-                });
+            });
                 try {
                     observer.observe(cpmstarDiv, { childList: true, subtree: true });
                 } catch {}
