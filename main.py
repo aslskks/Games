@@ -444,4 +444,3 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
-app.run(debug=True)
