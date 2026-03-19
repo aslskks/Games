@@ -36,6 +36,7 @@ with sqlite3.connect(DB) as conn:
         code TEXT NOT NULL
         )""")
 # Load JSON safely
+
 def load_json():
     if not os.path.exists(JSON_FILE):
         return {"requests": [], "ips": []}
@@ -49,7 +50,7 @@ def load_json():
     return data
 @app.before_request
 def before_request():
-    if session.get("log_in") is None and request.endpoint not in ("login", "welcome", "first_time", "unlock", "static", "index", "s", "service_worker", "build_files", "serve_file", "boxingindex", "basket_gameframe_css", "basket_gameframe", "basket_js", "basket_rando", "basket", "boxing", "images", "snowrider_build", "snowrider_template", "www.twoplayergames.org"):
+    if session.get("log_in") is None and request.endpoint not in ("login", "welcome", "first_time", "unlock", "static", "index", "s", "service_worker", "build_files", "serve_file", "images", "snowrider_build", "snowrider_template"):
         return redirect(url_for("login"))
 @app.before_request
 def log_request_info():
@@ -124,7 +125,7 @@ def post_game_request():
     with sqlite3.connect(DB) as conn:
         cursor = conn.cursor()
         created_at = datetime.now(ZoneInfo("America/Mexico_City")).isoformat()
-        cursor.execute("INSERT INTO requests (fname, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, created_at))
+        cursor.execute("INSERT INTO requests (name, link, message, created_at) VALUES (?, ?, ?, ?)", (game_name, game_link, message, created_at))
         conn.commit()
     return redirect(url_for("index"))
 # --- Example game routes ---
@@ -196,6 +197,7 @@ def log_ip():
     data = request.get_json()
     ip = get_ip()
     endpoint = data.get("endpoint", "unknown")
+    print(endpoint)
     if endpoint.startswith("/ovo"):
         game = "ovo"
     elif endpoint.startswith("/snowrider3d"):
@@ -204,8 +206,17 @@ def log_ip():
         game = "log_ip"
     elif endpoint.startswith("/minecraft"):
         game = "minecraft"
+    elif endpoint.startswith("/boxing"):
+        game = "boxing"
+    elif endpoint.startswith("/basket"):
+        game = "basket"
+    elif endpoint.startswith("/smash"):
+        game = "smash_karts"
+    elif endpoint.startswith("/2v2"):
+        game = "2v2.io"
     else:
         game = "unknown"
+        print(game)
     with sqlite3.connect(DB) as conn:
         if game != "log_ip" and game != "unknown" and endpoint != "/see":
             cursor = conn.cursor()
@@ -227,7 +238,6 @@ def log_ip():
 def remove_request(index):
     all_data = load_json()
     requests_list = all_data.get("requests", [])
-
     if index < 0 or index >= len(requests_list):
         return jsonify({"success": False, "error": "Invalid index"})
 
@@ -263,19 +273,6 @@ def basket():
     session["boxing"] = False
     session["basket"] = True
     return send_from_directory("basket/files/games/other/Basket_Random", "index.html")
-@app.get("/www.twoplayergames.org/gameframe/basket-random.html")
-def basket_rando():
-    return send_from_directory("templates/basket/www.twoplayergames.org/gameframe/", "basket-random.html")
-@app.get("/imasdk.googleapis.com/js/sdkloader/<path>")
-def basket_js(path):
-    return send_from_directory("templates/basket/imasdk.googleapis.com/js/sdkloader/", path)
-@app.get("/www.twoplayergames.org/dist/build/gameframe.b86d0fd3.js")
-def basket_gameframe():
-    return send_from_directory("templates/basket/www.twoplayergames.org/dist/build/", "gameframe.b86d0fd3.js")
-@app.get("/www.twoplayergames.org/dist/build/gameframe.c3880c83.css")
-def basket_gameframe_css():
-    return send_from_directory("templates/basket/www.twoplayergames.org/dist/build/", "gameframe.c3880c83.css")
-
 @app.route("/removerequest", methods=["POST"])
 def remove():
     try:
@@ -410,6 +407,14 @@ def serve_file(path: str):
                 os.path.dirname(full_path),
                 os.path.basename(full_path)
             )
+    if session.get("boxing") is False and session.get("basket") is True:
+        full_path = os.path.normpath(os.path.join("basket/files/games/other/Basket_Random", path))
+        if os.path.isfile(full_path):
+            return send_from_directory(
+                os.path.dirname(full_path),
+                os.path.basename(full_path)
+            )
+        return "File not found", 404
     game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
     full_path = os.path.normpath(os.path.join(game_folder, path))
     if os.path.isfile(full_path):
@@ -425,14 +430,7 @@ def serve_file(path: str):
             os.path.dirname(full_path),
             os.path.basename(full_path)
         )
-    if session.get("boxing") is False and session.get("basket") is True:
-        full_path = os.path.normpath(os.path.join("basket/files/games/other/Basket_Random", path))
-        if os.path.isfile(full_path):
-            return send_from_directory(
-                os.path.dirname(full_path),
-                os.path.basename(full_path)
-            )
-        return "File not found", 404
+
     full_path = os.path.normpath(os.path.join("templates/boxing", path))
     if os.path.isfile(full_path):
         return send_from_directory(

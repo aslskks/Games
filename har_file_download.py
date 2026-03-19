@@ -32,8 +32,10 @@ def download_one(entry, output_dir, hoodamath, downloaded):
     parsed = urlparse(url)
     path = parsed.path
 
-    if not path or path.endswith("/"):
+    if not path:
         return
+    if path.endswith("/"):
+        path += "index.html"
 
     safe_parts = sanitize_parts(path)
 
