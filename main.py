@@ -249,11 +249,19 @@ def remove_request(index):
 
     # Redirect back to main page instead of returning JSON
     return redirect(url_for('see'))
+@app.get("/smash")
+def smash():
+    session["smash"] = True
+    return send_from_directory("smash_karts/", "index.html")
 @app.get("/boxing")
 def boxingindex():
+    session["boxing"] = True
+    session["basket"] = False
     return send_from_directory("templates/boxing/", "index.html")
 @app.get("/basket")
 def basket():
+    session["boxing"] = False
+    session["basket"] = True
     return send_from_directory("basket/files/games/other/Basket_Random", "index.html")
 @app.get("/www.twoplayergames.org/gameframe/basket-random.html")
 def basket_rando():
@@ -389,15 +397,21 @@ def build_files(filename):
             status=resp.status_code,
             content_type=resp.headers.get("Content-Type"),
         )
-
-    return send_from_directory(BUILD_DIR, filename)
-
+@app.get("/basket/<path:path>")
+def basket_files(path):
+    return send_from_directory("basket/files/games/other/Basket_Random", path)
 
 @app.route("/<path:path>")
 def serve_file(path: str):
+    if session.get("smash") is True:
+        full_path = os.path.normpath(os.path.join("smash_karts", path))
+        if os.path.isfile(full_path):
+            return send_from_directory(
+                os.path.dirname(full_path),
+                os.path.basename(full_path)
+            )
     game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
     full_path = os.path.normpath(os.path.join(game_folder, path))
-
     if os.path.isfile(full_path):
         return send_from_directory(
             os.path.dirname(full_path),
@@ -411,12 +425,20 @@ def serve_file(path: str):
             os.path.dirname(full_path),
             os.path.basename(full_path)
         )
+    if session.get("boxing") is False and session.get("basket") is True:
+        full_path = os.path.normpath(os.path.join("basket/files/games/other/Basket_Random", path))
+        if os.path.isfile(full_path):
+            return send_from_directory(
+                os.path.dirname(full_path),
+                os.path.basename(full_path)
+            )
+        return "File not found", 404
     full_path = os.path.normpath(os.path.join("templates/boxing", path))
     if os.path.isfile(full_path):
         return send_from_directory(
-            os.path.dirname(full_path),
-            os.path.basename(full_path)
-        )
+                os.path.dirname(full_path),
+                os.path.basename(full_path)
+            )
 
     return "File not found", 404
 @app.get("/2v2")
@@ -444,3 +466,4 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
