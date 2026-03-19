@@ -360,7 +360,7 @@ def serve_static(filename):
 def service_worker():
     return send_from_directory("templates/2v2/s", "sw.js")
 BUILD_DIR = os.path.join(os.getcwd(), 'templates/2v2', 'Build')
-CDN_BASE_URL = "https://reliable-pika-0f63bb.netlify.app/Build"
+CDN_BASE_URL = "https://splendid-kulfi-9ddf88.netlify.app/Build"
 
 @app.route('/Build/<path:filename>')
 def build_files(filename):
@@ -381,7 +381,7 @@ def build_files(filename):
         for header in ("Content-Type", "Cache-Control", "Expires", "Last-Modified", "ETag"):
             if header in resp.headers:
                 headers[header] = resp.headers[header]
-
+        print("Proxied CDN request:", url)
         return Response(
             stream_with_context(resp.iter_content(chunk_size=8192)),
             headers=headers,
@@ -389,9 +389,6 @@ def build_files(filename):
             content_type=resp.headers.get("Content-Type"),
         )
 
-    file_path = os.path.join(BUILD_DIR, filename)
-    if not os.path.isfile(file_path):
-        return "File not found", 404
     return send_from_directory(BUILD_DIR, filename)
 
 

@@ -35,7 +35,9 @@ def is_hoodamath():
 
 
 def sanitize_name(name):
-    return re.sub(r'[<>:"/\\|?*]', '_', name)
+    name = name.replace("\\", "_")  # 🔥 fix Windows breaking
+    name = name.replace("/", "_")
+    return re.sub(r'[<>:"|?*]', '_', name)
 
 
 def download_files(entries, output_dir, hoodamath):
@@ -53,17 +55,38 @@ def download_files(entries, output_dir, hoodamath):
 
         if not path or path.endswith("/"):
             continue
+        # 🔥 split correctly on BOTH / and \
+        raw_parts = re.split(r"[\\/]+", path)
 
-        parts = path.lstrip("/").split("/")
-        safe_parts = [sanitize_name(p) for p in parts]
+        # remove empty parts
+        parts = [p for p in raw_parts if p.strip()]
+
+        # sanitize each part
+        safe_parts = [re.sub(r'[<>:"/\\|?*]', '_', p) for p in parts]
+
+        # build safe path
+        file_path = os.path.normpath(os.path.join(output_dir, *safe_parts))
 
         # HoodaMath filtering logic
         if hoodamath:
             if len(safe_parts) < 3 or safe_parts[0] != "mobile" or safe_parts[1] != "games":
                 continue
 
+        # Build full safe path
         file_path = os.path.join(output_dir, *safe_parts)
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Ensure all directories exist and are directories
+        dir_path = os.path.dirname(file_path)
+        if os.path.exists(dir_path):
+            if not os.path.isdir(dir_path):
+                # If a file blocks the folder, rename or skip
+                backup = dir_path + "_backup"
+                print(f"WARNING: {dir_path} is a file, renaming to {backup}")
+                os.rename(dir_path, backup)
+        try:
+            os.makedirs(dir_path, exist_ok=True)
+        except Exception as e:
+            os.makedirs("temp_dirs//" + dir_path, exist_ok=True)
 
         if os.path.exists(file_path):
             continue

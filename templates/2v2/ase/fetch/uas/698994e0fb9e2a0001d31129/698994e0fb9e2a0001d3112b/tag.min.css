@@ -1,0 +1,106 @@
+
+body {
+	margin: 0;
+	box-sizing: border-box;
+	font-size: 14px;
+    font-family: Arial, sans-serif;
+}
+
+ad-unit {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	-ms-transform-origin: 0 0;
+	-webkit-transform-origin: 0 0;
+	transform-origin: 0 0;
+}
+
+ad-canvas {
+	display: none;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+ad-layer {
+	display: block;
+	overflow: hidden;
+	background-color: transparent;
+}
+
+ad-layer.outlink {
+	cursor: pointer;
+}
+
+ad-layer > video {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.ad-outlink {
+	cursor: pointer;
+}
+
+ad-canvas, ad-layer {	
+	position: absolute;
+}
+
+ad-safeframe, ad-skin {
+	display: none;
+}
+
+.clickable-area {
+	cursor: pointer;
+	border: none;
+}
+
+ins {
+	text-decoration: none;
+	width: 100%;
+}
+
+.reflow-selected {
+	border: 2px solid red !important;
+}
+
+.text-div {
+	display: inline-block;
+	position: relative;
+	width: 100%;
+	text-decoration: inherit;
+}
+
+.skin-gutter {
+	position: fixed;
+}
+
+* {
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	user-drag: none;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+video::-webkit-media-controls,
+video::-moz-media-controls,
+video::-ms-media-controls,
+video::-internal-media-controls {
+    display: none !important;
+}
+}
+
+
+video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
