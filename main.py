@@ -48,6 +48,10 @@ def load_json():
             data = {"requests": [], "ips": []}
     return data
 @app.before_request
+def before_request():
+    if session.get("log_in") is None and request.endpoint not in ("login", "welcome", "first_time", "unlock", "static", "index", "s", "service_worker", "build_files", "serve_file", "boxingindex", "basket_gameframe_css", "basket_gameframe", "basket_js", "basket_rando", "basket", "boxing", "images", "snowrider_build", "snowrider_template", "www.twoplayergames.org"):
+        return redirect(url_for("login"))
+@app.before_request
 def log_request_info():
     ip = get_ip()
     if session.get("log_in") is None:
@@ -219,9 +223,6 @@ def log_ip():
             session.permanent = True
             session["logged_ip"] = True
     return jsonify({"success": True})
-@app.get("/boxing")
-def boxing():
-    return render_template("boxing/frame.html")
 @app.post("/remove-request/<int:index>")
 def remove_request(index):
     all_data = load_json()
@@ -248,9 +249,9 @@ def remove_request(index):
 
     # Redirect back to main page instead of returning JSON
     return redirect(url_for('see'))
-@app.get("/boxingindex")
+@app.get("/boxing")
 def boxingindex():
-    return send_from_directory("basket/files/", "index.html")
+    return send_from_directory("templates/boxing/", "index.html")
 @app.get("/basket")
 def basket():
     return render_template("basket/index.html")
@@ -443,4 +444,3 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
-app.run(host="0.0.0.0", port=8080, debug=True)
