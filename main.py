@@ -181,6 +181,10 @@ def snowrider_template(name):
 # --- Main Ovo game ---
 @app.get("/ovo")
 def ovo():
+    session["ovo"] = True
+    session["boxing"] = False
+    session["basket"] = False
+    session["smash"] = False
     game_folder = os.path.join(OUTPUT_DIR, "mobile/", "games/", "ovo/")
     filename = "game.html"
     full_path = os.path.join(game_folder, filename)
@@ -197,7 +201,6 @@ def log_ip():
     data = request.get_json()
     ip = get_ip()
     endpoint = data.get("endpoint", "unknown")
-    print(endpoint)
     if endpoint.startswith("/ovo"):
         game = "ovo"
     elif endpoint.startswith("/snowrider3d"):
@@ -262,17 +265,25 @@ def remove_request(index):
 @app.get("/smash")
 def smash():
     session["smash"] = True
+    session["boxing"] = False
+    session["basket"] = False
+    session["ovo"] = False
+    session["2v2"] = False
     return send_from_directory("smash_karts/", "index.html")
 @app.get("/boxing")
 def boxingindex():
     session["boxing"] = True
     session["basket"] = False
-    return send_from_directory("templates/boxing/", "index.html")
+    session["smash"] = False
+    session["2v2"] = False
+    return render_template("boxing/index.html")
 @app.get("/basket")
 def basket():
     session["boxing"] = False
     session["basket"] = True
-    return send_from_directory("basket/files/games/other/Basket_Random", "index.html")
+    session["smash"] = False
+    session["2v2"] = False
+    return render_template("basket/files/games/other/Basket_Random/index.html")
 @app.route("/removerequest", methods=["POST"])
 def remove():
     try:
@@ -364,17 +375,14 @@ def serve_static(filename):
     return send_from_directory("templates/2v2/s", filename)
 @app.get("/sw.js")
 def service_worker():
+    if session.get("2v2") is False or session.get("2v2") is None:
+        abort(404)
     return send_from_directory("templates/2v2/s", "sw.js")
 BUILD_DIR = os.path.join(os.getcwd(), 'templates/2v2', 'Build')
 CDN_BASE_URL = "https://splendid-kulfi-9ddf88.netlify.app/Build"
 
 @app.route('/Build/<path:filename>')
 def build_files(filename):
-    """Serve /Build/* assets.
-
-    If CDN_BASE_URL is set, proxy the request through this server so the URL stays under the app's domain.
-    Otherwise, serve the local ovo/Build files.
-    """
     if CDN_BASE_URL:
         # Proxy from CDN so clients never leave our domain.
         base = CDN_BASE_URL.rstrip("/")
@@ -396,52 +404,58 @@ def build_files(filename):
         )
 @app.get("/basket/<path:path>")
 def basket_files(path):
-    return send_from_directory("basket/files/games/other/Basket_Random", path)
-
-@app.route("/<path:path>")
-def serve_file(path: str):
-    if session.get("smash") is True:
-        full_path = os.path.normpath(os.path.join("smash_karts", path))
-        if os.path.isfile(full_path):
-            return send_from_directory(
-                os.path.dirname(full_path),
-                os.path.basename(full_path)
-            )
-    if session.get("boxing") is False and session.get("basket") is True:
-        full_path = os.path.normpath(os.path.join("basket/files/games/other/Basket_Random", path))
-        if os.path.isfile(full_path):
-            return send_from_directory(
-                os.path.dirname(full_path),
-                os.path.basename(full_path)
-            )
-        return "File not found", 404
-    game_folder = os.path.join(OUTPUT_DIR, GAME_PATH)
-    full_path = os.path.normpath(os.path.join(game_folder, path))
-    if os.path.isfile(full_path):
-        return send_from_directory(
-            os.path.dirname(full_path),
-            os.path.basename(full_path)
-        )
-
-    # fallback opcional para /ovo/
-    full_path = os.path.normpath(os.path.join("templates/2v2", path))
-    if os.path.isfile(full_path):
-        return send_from_directory(
-            os.path.dirname(full_path),
-            os.path.basename(full_path)
-        )
-
-    full_path = os.path.normpath(os.path.join("templates/boxing", path))
-    if os.path.isfile(full_path):
-        return send_from_directory(
-                os.path.dirname(full_path),
-                os.path.basename(full_path)
-            )
-
-    return "File not found", 404
+    return send_from_directory("templates/basket/files/games/other/Basket_Random", path)
 @app.get("/2v2")
 def io():
-    return send_from_directory("templates/2v2", "index.html")
+    session["2v2"] = True
+    session["boxing"] = False
+    session["basket"] = False
+    session["smash"] = False
+    return render_template("2v2/index.html")
+@app.route("/<path:path>")
+def serve_file(path: str):
+    if ".." in path:
+        return "Invalid path", 400
+
+    # 🎮 2v2 (FIRST priority)
+    if session.get("2v2") is True:
+        base_dir = "templates/2v2"
+        full_path = os.path.join(base_dir, path)
+
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+
+    # 🏀 Basket
+    if session.get("basket") is True:
+        base_dir = "templates/basket/files/games/other/Basket_Random"
+        full_path = os.path.join(base_dir, path)
+
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+
+    # 🥊 Boxing
+    if session.get("boxing") is True:
+        base_dir = "templates/boxing"
+        full_path = os.path.join(base_dir, path)
+
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+
+    # 🎮 Smash
+    if session.get("smash") is True:
+        base_dir = "smash_karts"
+        full_path = os.path.join(base_dir, path)
+
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+    if session.get("ovo") is True:
+        base_dir = "templates/ovo/mobile/games/ovo"
+        full_path = os.path.join(base_dir, path)
+
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+
+    return "File not found", 404
 
 def generate_code():
     """Genera un código aleatorio de 6 dígitos como string"""
