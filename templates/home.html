@@ -273,6 +273,56 @@ body.purple{
 .game-card a:hover{
   box-shadow:0 0 10px #ff7d00;
 }
+/* Hover lift & glow effect */
+.game-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 20px 30px rgba(255, 125, 0, 0.5);
+  filter: brightness(1.1);
+}
+
+/* Image zoom on hover */
+.game-card img {
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Card background gradient effect */
+.game-card-content {
+  transition: background 0.3s ease;
+}
+.game-card:hover .game-card-content {
+  background: linear-gradient(145deg, rgba(255,125,0,0.1), rgba(255,61,0,0.1));
+  border-radius: 0 0 12px 12px;
+}
+
+/* Subtle glow for links */
+.game-card-content a {
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.game-card-content a:hover {
+  box-shadow: 0 0 12px #ff7d00;
+  transform: scale(1.05);
+}
+
+/* Search input focus glow */
+.search-box input:focus {
+  box-shadow: 0 0 10px #ff7d00;
+  outline: none;
+}
+
+/* Footer glow effect on hover */
+footer:hover {
+  box-shadow: 0 -5px 20px rgba(255, 125, 0, 0.3);
+  transition: box-shadow 0.3s;
+}
 </style>
 </head>
 <body>
@@ -368,11 +418,27 @@ body.purple{
         <a href="/smash">Play Now</a>
       </div>
     </div>
+        <div class="game-card">
+      <img src="image/block.jpg" alt="Block post Game">
+      <div class="game-card-content">
+        <h2>Block post</h2>
+        <p>Jump into Blockpost – the ultimate blocky online shooter!</p>
+        <a href="/block">Play Now</a>
+      </div>
+    </div>
+            <div class="game-card">
+      <img src="image/stickman.jpg" alt="Stickman hook Game">
+      <div class="game-card-content">
+        <h2>Stickman hook</h2>
+        <p>Jump into Stickman hook – the ultimate platformer!</p>
+        <a href="/stickman">Play Now</a>
+      </div>
+    </div>
 
   </div>
   <!-- Small Game Request Link -->
    <div style="text-align:center; margin-top:30px;">
-    <a href="/request" style="color:#ff7d00; font-weight:bold; font-size:1.1rem;">Request a Game</a>
+    <a href="/request-game" style="color:#ff7d00; font-weight:bold; font-size:1.1rem;">Request a Game</a>
 </main>
 <footer>
   Game Hub v4

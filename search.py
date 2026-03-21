@@ -1,10 +1,10 @@
 import os
 
 # Directory to search
-path = "templates/2v2/"
+path = "rooftop-snipers/"
 # List to store matching file paths
 results = []
-target = """reCAPTCHA"""
+target = """poki"""
 
 for root, _, files in os.walk(path):
     for name in files:

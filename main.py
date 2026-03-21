@@ -177,7 +177,6 @@ def snowrider_build(name):
 @app.get("/snowrider3d/TemplateData/<path:name>")
 def snowrider_template(name):
     return send_from_directory("templates/snowrider3d/TemplateData", name)
-
 # --- Main Ovo game ---
 @app.get("/ovo")
 def ovo():
@@ -215,6 +214,8 @@ def log_ip():
         game = "basket"
     elif endpoint.startswith("/smash"):
         game = "smash_karts"
+    elif endpoint.startswith("/block"):
+        game = "blockpost"
     elif endpoint.startswith("/2v2"):
         game = "2v2.io"
     else:
@@ -384,7 +385,6 @@ CDN_BASE_URL = "https://splendid-kulfi-9ddf88.netlify.app/Build"
 @app.route('/Build/<path:filename>')
 def build_files(filename):
     if CDN_BASE_URL:
-        # Proxy from CDN so clients never leave our domain.
         base = CDN_BASE_URL.rstrip("/")
         url = f"{base}/{filename}"
         resp = requests.get(url, stream=True)
@@ -395,7 +395,6 @@ def build_files(filename):
         for header in ("Content-Type", "Cache-Control", "Expires", "Last-Modified", "ETag"):
             if header in resp.headers:
                 headers[header] = resp.headers[header]
-        print("Proxied CDN request:", url)
         return Response(
             stream_with_context(resp.iter_content(chunk_size=8192)),
             headers=headers,
@@ -412,6 +411,27 @@ def io():
     session["basket"] = False
     session["smash"] = False
     return render_template("2v2/index.html")
+@app.get("/block")
+def blockpost():
+    session["blockpost"] = True
+    session["2v2"] = False
+    session["boxing"] = False
+    session["basket"] = False
+    session["smash"] = False
+    session["ovo"] = False
+    session["stickman"] = False
+    return send_from_directory("blockpost/", "index.html")
+@app.get("/stickman")
+def stickman():
+    session["stickman"] = True
+    session["blockpost"] = False
+    session["2v2"] = False
+    session["boxing"] = False
+    session["basket"] = False
+    session["smash"] = False
+    session["ovo"] = False
+    session["stickman"] = True
+    return send_from_directory("stickman-hook/", "index.html")
 @app.route("/<path:path>")
 def serve_file(path: str):
     if ".." in path:
@@ -440,8 +460,19 @@ def serve_file(path: str):
 
         if os.path.isfile(full_path):
             return send_from_directory(base_dir, path)
+    if session.get("stickman") is True:
+        base_dir = "stickman-hook"
+        full_path = os.path.join(base_dir, path)
 
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
     # 🎮 Smash
+    if session.get("blockpost") is True:
+            base_dir = "blockpost"
+            full_path = os.path.join(base_dir, path)
+    
+            if os.path.isfile(full_path):
+                return send_from_directory(base_dir, path)
     if session.get("smash") is True:
         base_dir = "smash_karts"
         full_path = os.path.join(base_dir, path)
@@ -454,7 +485,6 @@ def serve_file(path: str):
 
         if os.path.isfile(full_path):
             return send_from_directory(base_dir, path)
-
     return "File not found", 404
 
 def generate_code():
@@ -478,3 +508,4 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
