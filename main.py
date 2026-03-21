@@ -409,6 +409,9 @@ def io():
     session["2v2"] = True
     session["boxing"] = False
     session["basket"] = False
+    session["ovo"] = False
+    session["blockpost"] = False
+    session["stickman"] = False
     session["smash"] = False
     return render_template("2v2/index.html")
 @app.get("/block")
@@ -508,3 +511,4 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
+app.run(debug=True)
