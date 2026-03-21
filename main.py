@@ -423,6 +423,7 @@ def blockpost():
     session["smash"] = False
     session["ovo"] = False
     session["stickman"] = False
+    session["totm"] = False
     return send_from_directory("blockpost/", "index.html")
 @app.get("/stickman")
 def stickman():
@@ -433,10 +434,17 @@ def stickman():
     session["basket"] = False
     session["smash"] = False
     session["ovo"] = False
+    session["totm"] = False
     session["stickman"] = True
     return send_from_directory("stickman-hook/", "index.html")
+@app.get("/totm")
+def totm():
+    session["totm"] = True
+    session["2v2"] = False
+    return send_from_directory("totm/", "index.html")
 @app.route("/<path:path>")
 def serve_file(path: str):
+    print("REQUEST:", path)
     if ".." in path:
         return "Invalid path", 400
 
@@ -447,7 +455,11 @@ def serve_file(path: str):
 
         if os.path.isfile(full_path):
             return send_from_directory(base_dir, path)
-
+    if session.get("totm"):
+        base_dir = "totm/"
+        full_path = os.path.join(base_dir, path)
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
     # 🏀 Basket
     if session.get("basket") is True:
         base_dir = "templates/basket/files/games/other/Basket_Random"
@@ -511,4 +523,3 @@ def update_code():
 
 Thread(target=update_code, daemon=True).start()
 Thread(target=update_json, daemon=True).start()
-app.run(debug=True)
