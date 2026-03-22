@@ -220,7 +220,6 @@ def log_ip():
         game = "2v2.io"
     else:
         game = "unknown"
-        print(game)
     with sqlite3.connect(DB) as conn:
         if game != "log_ip" and game != "unknown" and endpoint != "/see":
             cursor = conn.cursor()
@@ -354,10 +353,21 @@ def update_json():
             json.dump(full_data, file, indent=4)
         import time
         time.sleep(5)
+@app.get("/chess")
+def chess():
+    session["stickman"] = False
+    session["blockpost"] = False
+    session["2v2"] = False
+    session["boxing"] = False
+    session["basket"] = False
+    session["smash"] = False
+    session["ovo"] = False
+    session["totm"] = False
+    session["chess"] = True
+    return send_from_directory("chess/mobile/games/chess", "index.html")
 @app.get("/unlock")
 def unlock():
     if session.get("first_time") is None:
-        print("First time visitor")
         return redirect(url_for("welcome"))
     return "ok"
 @app.get("/welcome")
@@ -444,7 +454,6 @@ def totm():
     return send_from_directory("totm/", "index.html")
 @app.route("/<path:path>")
 def serve_file(path: str):
-    print("REQUEST:", path)
     if ".." in path:
         return "Invalid path", 400
 
@@ -492,6 +501,11 @@ def serve_file(path: str):
         base_dir = "smash_karts"
         full_path = os.path.join(base_dir, path)
 
+        if os.path.isfile(full_path):
+            return send_from_directory(base_dir, path)
+    if session.get("chess") is True:
+        base_dir = "chess/mobile/games/chess"
+        full_path = os.path.join(base_dir, path)
         if os.path.isfile(full_path):
             return send_from_directory(base_dir, path)
     if session.get("ovo") is True:
